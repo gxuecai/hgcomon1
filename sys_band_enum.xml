@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<band_enum_list>
+    <tech name = "CDMA">
+      <band_info band = "SYS_BAND_BC0" enum_num = "0"> </band_info>
+      <band_info band = "SYS_BAND_BC1" enum_num = "1"> </band_info>
+      <band_info band = "SYS_BAND_BC3" enum_num = "3"> </band_info>
+      <band_info band = "SYS_BAND_BC4" enum_num = "4"> </band_info>
+      <band_info band = "SYS_BAND_BC5" enum_num = "5"> </band_info>
+      <band_info band = "SYS_BAND_BC6" enum_num = "6"> </band_info>
+       <band_info band = "SYS_BAND_BC7" enum_num = "7"> </band_info>
+       <band_info band = "SYS_BAND_BC8" enum_num = "8"> </band_info>
+       <band_info band = "SYS_BAND_BC9" enum_num = "9"> </band_info>
+       <band_info band = "SYS_BAND_BC10" enum_num = "10"> </band_info>
+       <band_info band = "SYS_BAND_BC11" enum_num = "11"> </band_info>
+       <band_info band = "SYS_BAND_BC12" enum_num = "12"> </band_info>
+       <band_info band = "SYS_BAND_BC13" enum_num = "13"> </band_info>
+       <band_info band = "SYS_BAND_BC14" enum_num = "14"> </band_info>
+       <band_info band = "SYS_BAND_BC15" enum_num = "15"> </band_info>
+       <band_info band = "SYS_BAND_BC16" enum_num = "16"> </band_info>
+       <band_info band = "SYS_BAND_BC17" enum_num = "17"> </band_info>
+       <band_info band = "SYS_BAND_BC18" enum_num = "18"> </band_info>
+       <band_info band = "SYS_BAND_BC19" enum_num = "19"> </band_info>
+     </tech>
+     <tech name = "GSM">
+       <band_info band = "SYS_BAND_GSM_450" enum_num = "40"> </band_info>
+       <band_info band = "SYS_BAND_GSM_480" enum_num = "41"> </band_info>
+       <band_info band = "SYS_BAND_GSM_750" enum_num = "42"> </band_info>
+       <band_info band = "SYS_BAND_GSM_850" enum_num = "43"> </band_info>
+       <band_info band = "SYS_BAND_GSM_EGSM_900" enum_num = "44"> </band_info>
+       <band_info band = "SYS_BAND_GSM_PGSM_900" enum_num = "45"> </band_info>
+       <band_info band = "SYS_BAND_GSM_RGSM_900" enum_num = "46"> </band_info>
+       <band_info band = "SYS_BAND_GSM_DCS_1800" enum_num = "47"> </band_info>
+       <band_info band = "SYS_BAND_GSM_PCS_1900" enum_num = "48"> </band_info>
+     </tech>
+     <tech name = "WCDMA">
+       <band_info band = "SYS_BAND_WCDMA_I_IMT_2000" enum_num = "80"> </band_info>
+       <band_info band = "SYS_BAND_WCDMA_II_PCS_1900" enum_num = "81"> </band_info>
+       <band_info band = "SYS_BAND_WCDMA_III_1700" enum_num = "82"> </band_info>
+       <band_info band = "SYS_BAND_WCDMA_IV_1700" enum_num = "83"> </band_info>
+       <band_info band = "SYS_BAND_WCDMA_V_850" enum_num = "84"> </band_info>
+       <band_info band = "SYS_BAND_WCDMA_VI_800" enum_num = "85"> </band_info>
+       <band_info band = "SYS_BAND_WCDMA_VII_2600" enum_num = "86"> </band_info>
+       <band_info band = "SYS_BAND_WCDMA_VIII_900" enum_num = "87"> </band_info>
+       <band_info band = "SYS_BAND_WCDMA_IX_1700" enum_num = "88"> </band_info>
+       <band_info band = "SYS_BAND_WCDMA_XI_1500" enum_num = "90"> </band_info>
+       <band_info band = "SYS_BAND_WCDMA_XIX_850" enum_num = "91"> </band_info>
+     </tech>
+     <tech name = "LTE">
+       <band_info band = "SYS_BAND_LTE_EUTRAN_BAND1" enum_num = "120"> </band_info>
+       <band_info band = "SYS_BAND_LTE_EUTRAN_BAND2" enum_num = "121"> </band_info>
+       <band_info band = "SYS_BAND_LTE_EUTRAN_BAND3" enum_num = "122"> </band_info>
+       <band_info band = "SYS_BAND_LTE_EUTRAN_BAND4" enum_num = "123"> </band_info>
+       <band_info band = "SYS_BAND_LTE_EUTRAN_BAND5" enum_num = "124"> </band_info>
+       <band_info band = "SYS_BAND_LTE_EUTRAN_BAND6" enum_num = "125"> </band_info>
+       <band_info band = "SYS_BAND_LTE_EUTRAN_BAND7" enum_num = "126"> </band_info>
+       <band_info band = "SYS_BAND_LTE_EUTRAN_BAND8" enum_num = "127"> </band_info>
+       <band_info band = "SYS_BAND_LTE_EUTRAN_BAND9" enum_num = "128"> </band_info>
+       <band_info band = "SYS_BAND_LTE_EUTRAN_BAND10" enum_num = "129"> </band_info>
+       <band_info band = "SYS_BAND_LTE_EUTRAN_BAND11" enum_num = "130"> </band_info>
+       <band_info band = "SYS_BAND_LTE_EUTRAN_BAND12" enum_num = "131"> </band_info>
+       <band_info band = "SYS_BAND_LTE_EUTRAN_BAND13" enum_num = "132"> </band_info>
+       <band_info band = "SYS_BAND_LTE_EUTRAN_BAND14" enum_num = "133"> </band_info>
+       <band_info band = "SYS_BAND_LTE_EUTRAN_BAND17" enum_num = "136"> </band_info>
+       <band_info band = "SYS_BAND_LTE_EUTRAN_BAND18" enum_num = "137"> </band_info>
+       <band_info band = "SYS_BAND_LTE_EUTRAN_BAND19" enum_num = "138"> </band_info>
+       <band_info band = "SYS_BAND_LTE_EUTRAN_BAND20" enum_num = "139"> </band_info>
+       <band_info band = "SYS_BAND_LTE_EUTRAN_BAND21" enum_num = "140"> </band_info>
+       <band_info band = "SYS_BAND_LTE_EUTRAN_BAND23" enum_num = "142"> </band_info>
+       <band_info band = "SYS_BAND_LTE_EUTRAN_BAND23" enum_num = "143"> </band_info>
+       <band_info band = "SYS_BAND_LTE_EUTRAN_BAND25" enum_num = "144"> </band_info>
+       <band_info band = "SYS_BAND_LTE_EUTRAN_BAND26" enum_num = "145"> </band_info>
+       <band_info band = "SYS_BAND_LTE_EUTRAN_BAND27" enum_num = "146"> </band_info>
+       <band_info band = "SYS_BAND_LTE_EUTRAN_BAND28" enum_num = "147"> </band_info>
+       <band_info band = "SYS_BAND_LTE_EUTRAN_BAND29" enum_num = "148"> </band_info>
+       <band_info band = "SYS_BAND_LTE_EUTRAN_BAND30" enum_num = "149"> </band_info>
+       <band_info band = "SYS_BAND_LTE_EUTRAN_BAND31" enum_num = "150"> </band_info>
+       <band_info band = "SYS_BAND_LTE_EUTRAN_BAND32" enum_num = "151"> </band_info>
+       <band_info band = "SYS_BAND_LTE_EUTRAN_BAND33" enum_num = "152"> </band_info>
+       <band_info band = "SYS_BAND_LTE_EUTRAN_BAND34" enum_num = "153"> </band_info>
+       <band_info band = "SYS_BAND_LTE_EUTRAN_BAND35" enum_num = "154"> </band_info>
+       <band_info band = "SYS_BAND_LTE_EUTRAN_BAND36" enum_num = "155"> </band_info>
+       <band_info band = "SYS_BAND_LTE_EUTRAN_BAND37" enum_num = "156"> </band_info>
+       <band_info band = "SYS_BAND_LTE_EUTRAN_BAND38" enum_num = "157"> </band_info>
+       <band_info band = "SYS_BAND_LTE_EUTRAN_BAND39" enum_num = "158"> </band_info>
+       <band_info band = "SYS_BAND_LTE_EUTRAN_BAND40" enum_num = "159"> </band_info>
+       <band_info band = "SYS_BAND_LTE_EUTRAN_BAND41" enum_num = "160"> </band_info>
+       <band_info band = "SYS_BAND_LTE_EUTRAN_BAND42" enum_num = "161"> </band_info>
+       <band_info band = "SYS_BAND_LTE_EUTRAN_BAND43" enum_num = "162"> </band_info>
+       <band_info band = "SYS_BAND_LTE_EUTRAN_BAND125" enum_num = "163"> </band_info>
+       <band_info band = "SYS_BAND_LTE_EUTRAN_BAND126" enum_num = "164"> </band_info>
+       <band_info band = "SYS_BAND_LTE_EUTRAN_BAND127" enum_num = "165"> </band_info>
+       <band_info band = "SYS_BAND_LTE_EUTRAN_BAND252" enum_num = "166"> </band_info>
+       <band_info band = "SYS_BAND_LTE_EUTRAN_BAND255" enum_num = "167"> </band_info>
+       <band_info band = "SYS_BAND_LTE_EUTRAN_BAND66" enum_num = "168"> </band_info>
+       <band_info band = "SYS_BAND_LTE_EUTRAN_BAND250" enum_num = "169"> </band_info>
+       <band_info band = "SYS_BAND_LTE_EUTRAN_BAND46" enum_num = "176"> </band_info>
+ 	  <band_info band = "SYS_BAND_LTE_EUTRAN_BAND47" enum_num = "177"> </band_info>
+       <band_info band = "SYS_BAND_LTE_EUTRAN_BAND71" enum_num = "179"> </band_info>
+       <band_info band = "SYS_BAND_LTE_EUTRAN_BAND48" enum_num = "178"> </band_info>
+      <band_info band = "SYS_BAND_LTE_EUTRAN_BAND67" enum_num = "180"> </band_info>
+      <band_info band = "SYS_BAND_LTE_EUTRAN_BAND49" enum_num = "214"> </band_info>
+    </tech>
+    <tech name = "TDSCDMA">
+      <band_info band = "SYS_BAND_TDS_BANDA" enum_num = "170"> </band_info>
+      <band_info band = "SYS_BAND_TDS_BANDB" enum_num = "171"> </band_info>
+      <band_info band = "SYS_BAND_TDS_BANDC" enum_num = "172"> </band_info>
+      <band_info band = "SYS_BAND_TDS_BANDD" enum_num = "173"> </band_info>
+      <band_info band = "SYS_BAND_TDS_BANDE" enum_num = "174"> </band_info>
+      <band_info band = "SYS_BAND_TDS_BANDF" enum_num = "175"> </band_info>
+    </tech>
+    <tech name = "WLAN">
+      <band_info band = "SYS_BAND_WLAN_US_2400" enum_num = "110"> </band_info>
+      <band_info band = "SYS_BAND_WLAN_JAPAN_2400" enum_num = "111"> </band_info>
+      <band_info band = "SYS_BAND_WLAN_EUROPE_2400" enum_num = "112"> </band_info>
+      <band_info band = "SYS_BAND_WLAN_FRANCE_2400" enum_num = "113"> </band_info>
+      <band_info band = "SYS_BAND_WLAN_SPAIN_2400" enum_num = "114"> </band_info>
+      <band_info band = "SYS_BAND_WLAN_US_5000" enum_num = "115"> </band_info>
+      <band_info band = "SYS_BAND_WLAN_JAPAN_5000" enum_num = "116"> </band_info>
+      <band_info band = "SYS_BAND_WLAN_EUROPE_5000" enum_num = "117"> </band_info>
+      <band_info band = "SYS_BAND_WLAN_FRANCE_5000" enum_num = "118"> </band_info>
+      <band_info band = "SYS_BAND_WLAN_SPAIN_5000" enum_num = "119"> </band_info>
+    </tech>
+    <tech name = "NR5G">
+      <band_info band = "SYS_BAND_NR5G_BAND1" enum_num = "182"> </band_info>
+      <band_info band = "SYS_BAND_NR5G_BAND2" enum_num = "183"> </band_info>
+      <band_info band = "SYS_BAND_NR5G_BAND3" enum_num = "184"> </band_info>
+      <band_info band = "SYS_BAND_NR5G_BAND5" enum_num = "185"> </band_info>
+      <band_info band = "SYS_BAND_NR5G_BAND7" enum_num = "186"> </band_info>
+      <band_info band = "SYS_BAND_NR5G_BAND8" enum_num = "187"> </band_info>
+      <band_info band = "SYS_BAND_NR5G_BAND20" enum_num = "188"> </band_info>
+      <band_info band = "SYS_BAND_NR5G_BAND28" enum_num = "189"> </band_info>
+      <band_info band = "SYS_BAND_NR5G_BAND38" enum_num = "190"> </band_info>
+      <band_info band = "SYS_BAND_NR5G_BAND41" enum_num = "191"> </band_info>
+      <band_info band = "SYS_BAND_NR5G_BAND50" enum_num = "192"> </band_info>
+      <band_info band = "SYS_BAND_NR5G_BAND51" enum_num = "193"> </band_info>
+      <band_info band = "SYS_BAND_NR5G_BAND66" enum_num = "194"> </band_info>
+      <band_info band = "SYS_BAND_NR5G_BAND70" enum_num = "195"> </band_info>
+      <band_info band = "SYS_BAND_NR5G_BAND71" enum_num = "196"> </band_info>
+      <band_info band = "SYS_BAND_NR5G_BAND74" enum_num = "197"> </band_info>
+      <band_info band = "SYS_BAND_NR5G_BAND75" enum_num = "198"> </band_info>
+      <band_info band = "SYS_BAND_NR5G_BAND76" enum_num = "199"> </band_info>
+      <band_info band = "SYS_BAND_NR5G_BAND77" enum_num = "200"> </band_info>
+      <band_info band = "SYS_BAND_NR5G_BAND78" enum_num = "201"> </band_info>
+      <band_info band = "SYS_BAND_NR5G_BAND79" enum_num = "202"> </band_info>
+      <band_info band = "SYS_BAND_NR5G_BAND80" enum_num = "203"> </band_info>
+      <band_info band = "SYS_BAND_NR5G_BAND81" enum_num = "204"> </band_info>
+      <band_info band = "SYS_BAND_NR5G_BAND82" enum_num = "205"> </band_info>
+      <band_info band = "SYS_BAND_NR5G_BAND83" enum_num = "206"> </band_info>
+      <band_info band = "SYS_BAND_NR5G_BAND84" enum_num = "207"> </band_info>
+      <band_info band = "SYS_BAND_NR5G_BAND85" enum_num = "208"> </band_info>
+      <band_info band = "SYS_BAND_NR5G_BAND257" enum_num = "209"> </band_info>
+      <band_info band = "SYS_BAND_NR5G_BAND258" enum_num = "210"> </band_info>
+      <band_info band = "SYS_BAND_NR5G_BAND259" enum_num = "211"> </band_info>
+      <band_info band = "SYS_BAND_NR5G_BAND260" enum_num = "212"> </band_info>
+      <band_info band = "SYS_BAND_NR5G_BAND261" enum_num = "213"> </band_info>
+      <band_info band = "SYS_BAND_NR5G_BAND12" enum_num = "215"> </band_info>
+      <band_info band = "SYS_BAND_NR5G_BAND25" enum_num = "216"> </band_info>
+      <band_info band = "SYS_BAND_NR5G_BAND34" enum_num = "217"> </band_info>
+      <band_info band = "SYS_BAND_NR5G_BAND39" enum_num = "218"> </band_info>
+      <band_info band = "SYS_BAND_NR5G_BAND40" enum_num = "219"> </band_info>
+      <band_info band = "SYS_BAND_NR5G_BAND65" enum_num = "220"> </band_info>
+      <band_info band = "SYS_BAND_NR5G_BAND86" enum_num = "221"> </band_info>
+    </tech>
+</band_enum_list>

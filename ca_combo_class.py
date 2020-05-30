@@ -5,12 +5,12 @@ import re
 
 
 class Lte_ca_combo:
-    dl_ca_list=[]
-    ul_ca_list=[]
-    dl_band_num=0
-    ul_band_num=0
 
     def __init__(self, ca_string):
+        self.dl_ca_list = []
+        self.ul_ca_list = []
+        self.dl_band_num = 0
+        self.ul_band_num = 0
         self.parse_ca_list(ca_string)
         self.print_ca_info()
 

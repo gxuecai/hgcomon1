@@ -1,5 +1,7 @@
 import xml.etree.ElementTree as ET
 import types
+import ca_combo_class
+
 '''
 Python etree handle XML file
 '''
@@ -43,9 +45,14 @@ assert isinstance(child_child_child, ET.Element)
 
 # handle 4g combos
 print_tree_element_info(child_child_child[0],'child_child_child[0]')
+lte_combo_list=[]
 for ca_4g_combos in child_child_child:
     #assert isinstance(ca_4g_combos, ET.Element)
     print(ca_4g_combos.text)
+    temp1=ca_combo_class.Lte_ca_combo(ca_4g_combos.text)
+    lte_combo_list.append(temp1)
+
+print(len(lte_combo_list))
 
 
 

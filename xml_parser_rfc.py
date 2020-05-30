@@ -49,8 +49,7 @@ lte_combo_list=[]
 for ca_4g_combos in child_child_child:
     #assert isinstance(ca_4g_combos, ET.Element)
     print(ca_4g_combos.text)
-    temp1=ca_combo_class.Lte_ca_combo(ca_4g_combos.text)
-    lte_combo_list.append(temp1)
+    lte_combo_list.append(ca_combo_class.Lte_ca_combo(ca_4g_combos.text))
 
 print(len(lte_combo_list))
 

@@ -10,10 +10,13 @@ class Lte_ca_combo:
         # object instance variables which are also visible to other funcs of this class
         self.dl_ca_list = []
         self.ul_ca_list = []
+        self.band_list = []
+        self.ca_string = ca_string
         self.dl_band_num = 0
         self.ul_band_num = 0
         # parse the ca string from RFC to the object ca info variables
         self.parse_ca_list(ca_string)
+        self.get_dlca_band_list()
         self.print_ca_info()
 
     # parse the ca band info, ant info
@@ -36,8 +39,15 @@ class Lte_ca_combo:
     # print self object instance variables of ca info
     def print_ca_info(self):
         print('dl_ca_list: ',self.dl_ca_list,' ul_ca_list:',self.ul_ca_list,' ca band number: ', self.dl_band_num)
+        #print(self.band_list)
 
-aaa= Lte_ca_combo('B2A[2];A[1]+B46E[2,2,2,2]+B48A[4]')
+    # get ca bands list without ant number
+    def get_dlca_band_list(self):
+        self.band_list = [item[0] for item in self.dl_ca_list]
+        self.band_list.sort()
+
+
+aaa= Lte_ca_combo('B48A[4]+B2A[2];A[1]+B46E[2,2,2,2]')
 
 '''
 ss = re.split(r'\+', 'B2A[2];A[1]+B46E[2,2,2,2]+B48A[4]')

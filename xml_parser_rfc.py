@@ -45,7 +45,7 @@ assert isinstance(child_child_child, ET.Element)
 
 # handle 4g combos
 print_tree_element_info(child_child_child[0],'child_child_child[0]')
-lte_combo_list=[]
+lte_combo_list=[] # Save all the ca combos object to a combo list
 for ca_4g_combos in child_child_child:
     #assert isinstance(ca_4g_combos, ET.Element)
     print(ca_4g_combos.text)

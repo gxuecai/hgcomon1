@@ -40,45 +40,57 @@ assert isinstance(child_child, ET.Element)
 
 # get ca_4g_combos node
 child_child_child=child_child.find("ca_4g_combos")
-print_tree_element_info(child_child_child,'child_child_child')
-assert isinstance(child_child_child, ET.Element)
+if child_child_child:
+    print_tree_element_info(child_child_child, 'child_child_child')
+    assert isinstance(child_child_child, ET.Element)
 
-# handle 4g combos
-print_tree_element_info(child_child_child[0],'child_child_child[0]')
-lte_combo_list=[] # Save all the ca combos object to a combo list
-for ca_4g_combos in child_child_child:
-    #assert isinstance(ca_4g_combos, ET.Element)
-    print(ca_4g_combos.text)
-    lte_combo_list.append(ca_combo_class.LteNR_ca_combo(ca_4g_combos.text))
+    # handle 4g combos
+    print_tree_element_info(child_child_child[0], 'child_child_child[0]')
+    lte_combo_list = []  # Save all the ca combos object to a combo list
+    for ca_4g_combos in child_child_child:
+        # assert isinstance(ca_4g_combos, ET.Element)
+        print(ca_4g_combos.text)
+        lte_combo_list.append(ca_combo_class.LteNR_ca_combo(ca_4g_combos.text))
 
-print(len(lte_combo_list))
+    print(len(lte_combo_list))
+else:
+    lte_combo_list = []
+    print("No ca_4g_combos")
 
 # get ca_5g_combos node
 child_child_child=child_child.find("ca_5g_combos")
-print_tree_element_info(child_child_child,'child_child_child')
-assert isinstance(child_child_child, ET.Element)
+if child_child_child:
+    print_tree_element_info(child_child_child, 'child_child_child')
+    assert isinstance(child_child_child, ET.Element)
 
-# handle 5g combos
-print_tree_element_info(child_child_child[0],'child_child_child[0]')
-nr_combo_list=[] # Save all the nr combos object to a combo list
-for nr_combos in child_child_child:
-    #assert isinstance(ca_4g_combos, ET.Element)
-    print(nr_combos.text)
-    nr_combo_list.append(ca_combo_class.LteNR_ca_combo(nr_combos.text))
-print(len(nr_combo_list))
+    # handle 5g combos
+    print_tree_element_info(child_child_child[0], 'child_child_child[0]')
+    nr_combo_list = []  # Save all the nr combos object to a combo list
+    for nr_combos in child_child_child:
+        # assert isinstance(ca_4g_combos, ET.Element)
+        print(nr_combos.text)
+        nr_combo_list.append(ca_combo_class.LteNR_ca_combo(nr_combos.text))
+    print(len(nr_combo_list))
+else:
+    nr_combo_list = []
+    print("No ca_5g_combos")
 
 # get ca_4g_5g_combos node
 child_child_child=child_child.find("ca_4g_5g_combos")
-print_tree_element_info(child_child_child,'child_child_child')
-assert isinstance(child_child_child, ET.Element)
+if child_child_child:
+    print_tree_element_info(child_child_child, 'child_child_child')
+    assert isinstance(child_child_child, ET.Element)
 
-# handle endc combos
-print_tree_element_info(child_child_child[0],'child_child_child[0]')
-endc_combo_list=[] # Save all the nr combos object to a combo list
-for endc_combos in child_child_child:
-    #assert isinstance(ca_4g_combos, ET.Element)
-    print(endc_combos.text)
-    endc_combo_list.append(ca_combo_class.LteNR_ca_combo(endc_combos.text))
-print(len(endc_combo_list))
+    # handle endc combos
+    print_tree_element_info(child_child_child[0], 'child_child_child[0]')
+    endc_combo_list = []  # Save all the nr combos object to a combo list
+    for endc_combos in child_child_child:
+        # assert isinstance(ca_4g_combos, ET.Element)
+        print(endc_combos.text)
+        endc_combo_list.append(ca_combo_class.LteNR_ca_combo(endc_combos.text))
+    print(len(endc_combo_list))
+else:
+    endc_combo_list = []
+    print("No ca_4g_5g_combos")
 
 

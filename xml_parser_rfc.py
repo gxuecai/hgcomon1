@@ -87,7 +87,9 @@ if child_child_child:
     for endc_combos in child_child_child:
         # assert isinstance(ca_4g_combos, ET.Element)
         print(endc_combos.text)
-        endc_combo_list.append(ca_combo_class.LteNR_ca_combo(endc_combos.text))
+        ca_combo_parse = ca_combo_class.LteNR_ca_combo(endc_combos.text)
+        if ca_combo_parse.is_MMW_combo == 0:
+            endc_combo_list.append(ca_combo_parse)
     print(len(endc_combo_list))
 else:
     endc_combo_list = []

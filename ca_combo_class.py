@@ -14,6 +14,7 @@ class LteNR_ca_combo:
         self.ca_string = ca_string
         self.dl_band_num = 0
         self.ul_band_num = 0
+        self.is_MMW_combo = 0
         # parse the ca string from RFC to the object ca info variables
         self.parse_ca_list(ca_string)
         self.get_dlca_band_list()
@@ -29,6 +30,8 @@ class LteNR_ca_combo:
             #print('band: %s, ant: %s' % (ss1_dl.group(1), ss1_dl.group(2)))
             if ss1_dl.group()[0] == 'N': # NR band
                 self.dl_ca_list.append(('N'+ss1_dl.group(1), ss1_dl.group(2)))
+                if int(ss1_dl.group(1)) > 95: # identify as MMW if band number is greater than 95
+                    self.is_MMW_combo = 1
             else: # LTE band
                 self.dl_ca_list.append((ss1_dl.group(1), ss1_dl.group(2)))
             self.dl_band_num+=1
@@ -44,17 +47,20 @@ class LteNR_ca_combo:
 
     # print self object instance variables of ca info
     def print_ca_info(self):
-        print('dl_ca_list: ',self.dl_ca_list,' ul_ca_list:',self.ul_ca_list,' ca band number: ', self.dl_band_num)
+        if self.is_MMW_combo == 0:
+            print('dl_ca_list: ',self.dl_ca_list,' ul_ca_list:',self.ul_ca_list,' ca band number: ', self.dl_band_num)
         #print(self.band_list)
 
     # get ca bands list without ant number
     def get_dlca_band_list(self):
         self.band_list = [item[0] for item in self.dl_ca_list]
         self.band_list.sort()
+        self.dl_ca_list.sort()
 
 
 aaa= LteNR_ca_combo('B48A[4]+B2A[2];A[1]+B46E[2,2,2,2]')
 bbb= LteNR_ca_combo('B66A[4];A[1] + N25A[4];A[1]')
+bbb= LteNR_ca_combo('B66A[4];A[1] + N256A[4];A[1]')
 '''
 ss = re.split(r'\+', 'B2A[2];A[1]+B46E[2,2,2,2]+B48A[4]')
 print(ss)

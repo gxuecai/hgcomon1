@@ -23,7 +23,9 @@ class LteNR_ca_combo_json:
         self.dl_ca_list = []
         self.ul_ca_list = []
         self.dl_band_num = 0
+        self.band_list=[]
         self.get_ca_list(combos)
+        self.get_dl_ca_band_list()
         # self.print_ca_info()
 
     def get_ca_list(self, combo_list):
@@ -47,6 +49,10 @@ class LteNR_ca_combo_json:
 
     def print_ca_info(self):
         print('dl_ca_list: ',self.dl_ca_list,' ul_ca_list:',self.ul_ca_list,' ca band number: ', self.dl_band_num)
+
+    def get_dl_ca_band_list(self):
+        self.dl_ca_list.sort()
+        self.band_list = [item[0] for item in self.dl_ca_list]
 
 def lte_nr_combo_nrx_handle(rx_num, combos_nrx_dict, keys_str_n, output_nrx_combo_json):
     '''

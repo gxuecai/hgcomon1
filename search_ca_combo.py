@@ -59,6 +59,7 @@ pattern2.pattern = xlwt.Pattern.SOLID_PATTERN
 pattern2.pattern_fore_colour = xlwt.Style.colour_map['white']
 style2.alignment.wrap = style2.alignment.WRAP_AT_RIGHT
 style2.alignment.vert = style2.alignment.VERT_CENTER
+style2.alignment.horz = style2.alignment.HORZ_CENTER
 #style2.pattern = pattern2
 
 style_list = [style, style2]

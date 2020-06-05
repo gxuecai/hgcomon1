@@ -43,14 +43,20 @@ style = xlwt.XFStyle()
 font = xlwt.Font()
 font.name = 'Arial'
 font.bold = True
-font.colour_index = xlwt.Style.colour_map['red']
+font.colour_index = xlwt.Style.colour_map['blue']
 pattern = xlwt.Pattern()
 pattern.pattern = xlwt.Pattern.SOLID_PATTERN
 pattern.pattern_fore_colour = xlwt.Style.colour_map['pale_blue']
+bolder = xlwt.Borders()
+bolder.bottom = bolder.THIN
+bolder.right = bolder.THIN
+bolder.left = bolder.THIN
+bolder.top = bolder.THIN
 style.font = font
 style.alignment.wrap = style.alignment.WRAP_AT_RIGHT # 自动换行
 style.alignment.vert = style.alignment.VERT_CENTER
 style.alignment.horz = style.alignment.HORZ_CENTER
+style.borders = bolder
 #style.pattern = pattern
 
 style2 = xlwt.XFStyle()
@@ -60,9 +66,20 @@ pattern2.pattern_fore_colour = xlwt.Style.colour_map['white']
 style2.alignment.wrap = style2.alignment.WRAP_AT_RIGHT
 style2.alignment.vert = style2.alignment.VERT_CENTER
 style2.alignment.horz = style2.alignment.HORZ_CENTER
-#style2.pattern = pattern2
+style2.borders = bolder
+style2.pattern = pattern2
 
-style_list = [style, style2]
+style1 = xlwt.XFStyle()
+pattern1 = xlwt.Pattern()
+pattern1.pattern = xlwt.Pattern.SOLID_PATTERN
+pattern1.pattern_fore_colour = xlwt.Style.colour_map['ivory']
+style1.alignment.wrap = style1.alignment.WRAP_AT_RIGHT
+style1.alignment.vert = style1.alignment.VERT_CENTER
+style1.alignment.horz = style1.alignment.HORZ_CENTER
+style1.borders = bolder
+style1.pattern = pattern1
+
+style_list = [style1, style2]
 #-----------------------------------
 while 1:
     user_search_combo = input("Please input search combos as the format B1+B2+B4+N66 >>")
@@ -81,11 +98,11 @@ while 1:
         row_n = 1
         ws.write(0, 0, 'DLCA combo', style)
         ws.write(0, 1, 'ULCA combo', style)
-        ws.write(0, 2, 'Band Index 1', style)
-        ws.write(0, 3, 'Band Index 2', style)
-        ws.write(0, 4, 'Band Index 3', style)
-        ws.write(0, 5, 'Band Index 4', style)
-        ws.write(0, 6, 'Band Index 5', style)
+        ws.write(0, 2, 'Band Idx 0', style)
+        ws.write(0, 3, 'Band Idx 1', style)
+        ws.write(0, 4, 'Band Idx 2', style)
+        ws.write(0, 5, 'Band Idx 3', style)
+        ws.write(0, 6, 'Band Idx 4', style)
 
         for ca_combos_i in lte_nr_combo_nrx_list[combo_band_number]:
             if input_band_combo == ca_combos_i.band_list:
@@ -96,13 +113,12 @@ while 1:
                 col_j = 1
                 for combo_info_i in ca_combos_i.combos:
                     col_j += 1
-                    print_band_port_info = combo_info_i[1]+'\n'+combo_info_i[7]+'\n'+ combo_info_i[8]+'\n'+combo_info_i[9]+'\n'+ combo_info_i[10]
-                    ws.write(row_n, col_j, print_band_port_info, style2)
+                    print_band_port_info = json_sdr_allocation_handler_v1.get_band_port_string(combo_info_i) # combo_info_i[1]+'\n'+combo_info_i[7]+'\n'+ combo_info_i[8]+'\n'+combo_info_i[9]+'\n'+ combo_info_i[10]
+                    ws.write(row_n, col_j, print_band_port_info, style_list[col_j % 2])
                 row_n += 1
-        for col_n in range(2,col_j+1):
-            ws.col(col_n).width = 256*50
+        for col_n in range(2,9):
+            ws.col(col_n).width = 256*40
         wb.save('CA_port.xls')
-
 
     print('-------------------------------------------------- \n')
 

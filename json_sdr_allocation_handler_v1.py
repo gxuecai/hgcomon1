@@ -83,8 +83,47 @@ def lte_nr_combo_nrx_handle(rx_num, combos_nrx_dict, keys_str_n, output_nrx_comb
 
     print('\nTotal combos of %s: ' % re_str[rx_num], len(output_nrx_combo_json))
 
+def get_band_port_string(band_item):
+
+    band_str = band_item[1]
+    main_prx_str = band_item[7]
+    main_drx_str = band_item[8]
+    mimo_prx_str = band_item[9]
+    mimo_drx_str = band_item[10]
+    return_str = ''
+    return_str += re.search(r'(.*) = (.*)', band_str).group(2)
+    re_prx = re.search(r'(.*) = (.*)', main_prx_str)
+    return_str += ('\n' + re_prx.group(1)[1:9] + ' = ' + re_prx.group(2))
+    re_prx = re.search(r'(.*) = (.*)', main_drx_str)
+    return_str += ('\n' + re_prx.group(1)[1:9] + ' = ' + re_prx.group(2))
+    re_prx = re.search(r'(.*) = (.*)', mimo_prx_str)
+    return_str += ('\n' + re_prx.group(1)[1:9] + ' = ' + re_prx.group(2))
+    re_prx = re.search(r'(.*) = (.*)', mimo_drx_str)
+    return_str += ('\n' + re_prx.group(1)[1:9] + ' = ' + re_prx.group(2))
+
+    return return_str
+
+
 # ---------------------------Test------------------------------
 
+band_item = \
+    [
+        ".tech = RFDEVICE_TRX_STD_NR5G_SUB6",
+        ".wtr_band = SDR865_SUB6_RX_BAND41",
+        ".tx_pll = TRUE",
+        ".num_dl_layers = 4",
+        ".rxpll = SDR865_RX_PLL_RXPLL0",
+        ".main_dl_pair = SDR865_DL_PAIR_RX0",
+        ".mimo_dl_pair = SDR865_DL_PAIR_RX1",
+        ".main_prx_port_bitmask = SDR865_RX_PORT_PRX7",
+        ".main_drx_port_bitmask = SDR865_RX_PORT_DRX7",
+        ".mimo_prx_port_bitmask = SDR865_RX_PORT_PRX0",
+        ".mimo_drx_port_bitmask = SDR865_RX_PORT_DRX0",
+        ".lo_div = 2",
+        ".ilna_split_rxpll_bitmask = 0"
+    ]
+
+print(get_band_port_string(band_item))
 
 # ---------------------------Main--------------------------------
 file_read = open(r"C:\CODE\MPSS.HI.1.0.c8-00198\modem_proc\rf\rfdevice_sdr865\common\etc\Storage\RF_SW\sdr865_default_ca_combo_allocations.json","rb")

@@ -49,7 +49,7 @@ if child_child_child:
     lte_combo_list = []  # Save all the ca combos object to a combo list
     for ca_4g_combos in child_child_child:
         # assert isinstance(ca_4g_combos, ET.Element)
-        print(ca_4g_combos.text)
+        # print(ca_4g_combos.text)
         lte_combo_list.append(ca_combo_class.LteNR_ca_combo(ca_4g_combos.text))
 
     print(len(lte_combo_list))
@@ -68,7 +68,7 @@ if child_child_child:
     nr_combo_list = []  # Save all the nr combos object to a combo list
     for nr_combos in child_child_child:
         # assert isinstance(ca_4g_combos, ET.Element)
-        print(nr_combos.text)
+        # print(nr_combos.text)
         nr_combo_list.append(ca_combo_class.LteNR_ca_combo(nr_combos.text))
     print(len(nr_combo_list))
 else:
@@ -86,7 +86,7 @@ if child_child_child:
     endc_combo_list = []  # Save all the nr combos object to a combo list
     for endc_combos in child_child_child:
         # assert isinstance(ca_4g_combos, ET.Element)
-        print(endc_combos.text)
+        # print(endc_combos.text)
         ca_combo_parse = ca_combo_class.LteNR_ca_combo(endc_combos.text)
         if ca_combo_parse.is_MMW_combo == 0:
             endc_combo_list.append(ca_combo_parse)

@@ -18,7 +18,7 @@ class LteNR_ca_combo:
         # parse the ca string from RFC to the object ca info variables
         self.parse_ca_list(ca_string)
         self.get_dlca_band_list()
-        self.print_ca_info()
+        # self.print_ca_info()
 
     # parse the ca band info, ant info
     def parse_ca_list(self, ca_string):

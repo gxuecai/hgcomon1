@@ -15,11 +15,16 @@ def print_tree_element_info(element, namestring):
 # -------------------------------------------------------------------------
 
 rfc_path = input("Input RFC XML: ")
-print(rfc_path) # C:\CODE\MPSS.HI.1.0.c8-00198\modem_proc\rf\rfc_himalaya\common\etc\rf_card\rfc_Global_SDRV300_BoardID2_ag.xml
 
 # file element tree and get root node
 tree= ET.ElementTree()
-tree.parse(rfc_path)
+try:
+    tree.parse(rfc_path)
+    print(rfc_path)
+except:
+    print('Use default RFC path')
+    tree.parse(r'C:\CODE\MPSS.HI.1.0.c8-00198\modem_proc\rf\rfc_himalaya\common\etc\rf_card\rfc_Global_SDRV300_BoardID2_ag.xml')
+
 root=tree.getroot()
 
 # root RFC

@@ -1,7 +1,5 @@
-import xml_parser_rfc
 import re
 import os
-import json_sdr_allocation_handler_v1
 import xlsxwriter as XW
 
 # parse the lte band number as B1+B3+B4 format
@@ -21,53 +19,63 @@ def parse_ca_bands_from_input(input_string):
 #print(parse_ca_bands_from_input("B1+B3+B5"))
 
 # -----------------------------Main-------------------------------
-os.system("cls") # cmd window clear screen
 
-isRFC = input("Searching combos in RFC or internal sdr allocation (1: RFC, 0/others: internal sdr allocation)>>")
+isRFC = input("Searching combos in RFC or internal sdr allocation (1: RFC, 0: internal sdr allocation)>>")
+
+if isRFC == '1':
+    import xml_parser_rfc
+    os.system("cls")  # cmd window clear screen
+    print('>>> Search CA combo configured in RFC')
+else:
+    import json_sdr_allocation_handler_v1
+
+    lte_nr_combo_nrx_list = [0,
+                             json_sdr_allocation_handler_v1.lte_nr_combo_json_1rx,
+                             json_sdr_allocation_handler_v1.lte_nr_combo_json_2rx,
+                             json_sdr_allocation_handler_v1.lte_nr_combo_json_3rx,
+                             json_sdr_allocation_handler_v1.lte_nr_combo_json_4rx,
+                             json_sdr_allocation_handler_v1.lte_nr_combo_json_5rx]
+
+    # ----------Excel handler-----------
+
+    wb = XW.Workbook('CA_port.xlsx')
+    ws = wb.add_worksheet()
+
+    format1 = wb.add_format({'font_size': 10, 'font_name': 'Arial', 'bold': 1, 'font_color': 'white',
+                             'fg_color': 'green',
+                             'bottom': 1, 'top': 1, 'right': 1, 'left': 1,
+                             'align': 'center', 'valign': 'vcenter',
+                             'text_wrap': 1})
+    format2 = wb.add_format({'font_size': 10, 'font_name': 'Arial', 'bold': 0, 'font_color': 'black',
+                             'fg_color': '#F2F2F2',
+                             'bottom': 1, 'top': 1, 'right': 1, 'left': 1,
+                             'align': 'center', 'valign': 'vcenter',
+                             'text_wrap': 1})
+    format3 = wb.add_format({'font_size': 10, 'font_name': 'Arial', 'bold': 0, 'font_color': 'black',
+                             'fg_color': 'white',
+                             'bottom': 1, 'top': 1, 'right': 1, 'left': 1,
+                             'align': 'center', 'valign': 'vcenter',
+                             'text_wrap': 1})
+
+    ws.set_column(0, 1, 20, format3)
+    ws.set_column(2, 2, 40, format2)
+    ws.set_column(3, 3, 40, format3)
+    ws.set_column(4, 4, 40, format2)
+    ws.set_column(5, 5, 40, format3)
+    ws.set_column(6, 6, 40, format2)
+    # ws.set_column(7,7,40,format3)
+    ws.freeze_panes(1, 0)
+
+    Heading_list = ['DL CA combos', 'UL CA combos', 'Band Idx 0', 'Band Idx 1', 'Band Idx 2', 'Band Idx 3',
+                    'Band Idx 4']
+    ws.set_row(0, 40)
+    ws.write_row(0, 0, Heading_list, format1)
+
+    style_list = [format2, format3]
+    row_n = 1
+
 
 user_search_combo=""
-lte_nr_combo_nrx_list = [0,
-                         json_sdr_allocation_handler_v1.lte_nr_combo_json_1rx,
-                         json_sdr_allocation_handler_v1.lte_nr_combo_json_2rx,
-                         json_sdr_allocation_handler_v1.lte_nr_combo_json_3rx,
-                         json_sdr_allocation_handler_v1.lte_nr_combo_json_4rx,
-                         json_sdr_allocation_handler_v1.lte_nr_combo_json_5rx]
-# ----------Excel handler-----------
-
-wb = XW.Workbook('CA_port.xlsx')
-ws = wb.add_worksheet()
-
-format1 = wb.add_format({'font_size': 10,'font_name' : 'Arial', 'bold': 1, 'font_color': 'white',
-                         'fg_color': 'green',
-                         'bottom': 1, 'top': 1, 'right': 1, 'left': 1,
-                         'align': 'center', 'valign': 'vcenter',
-                         'text_wrap': 1})
-format2 = wb.add_format({'font_size': 10,'font_name' : 'Arial', 'bold': 0, 'font_color': 'black',
-                         'fg_color':'#F2F2F2',
-                         'bottom': 1, 'top': 1, 'right': 1, 'left': 1,
-                         'align': 'center', 'valign': 'vcenter',
-                         'text_wrap': 1})
-format3 = wb.add_format({'font_size': 10,'font_name' : 'Arial', 'bold': 0, 'font_color': 'black',
-                         'fg_color':'white',
-                         'bottom': 1, 'top': 1, 'right': 1, 'left': 1,
-                         'align': 'center', 'valign': 'vcenter',
-                         'text_wrap': 1})
-
-ws.set_column(0,1,20,format3)
-ws.set_column(2,2,40,format2)
-ws.set_column(3,3,40,format3)
-ws.set_column(4,4,40,format2)
-ws.set_column(5,5,40,format3)
-ws.set_column(6,6,40,format2)
-#ws.set_column(7,7,40,format3)
-ws.freeze_panes(1,0)
-
-Heading_list = ['DL CA combos', 'UL CA combos','Band Idx 0', 'Band Idx 1','Band Idx 2','Band Idx 3','Band Idx 4']
-ws.set_row(0,40)
-ws.write_row(0, 0, Heading_list, format1)
-
-style_list = [format2, format3]
-row_n = 1
 
 #-----------------------------------
 while 1:
@@ -98,10 +106,11 @@ while 1:
                     ws.write(row_n, col_j, print_band_port_info, style_list[col_j % 2])
                 ws.set_row(row_n, 70)
                 row_n += 1
-
+        print('enter \'exit\' to save all searching combos mapping to excel file, else please continue to input combos')
 
     print('-------------------------------------------------- \n')
 
-wb.close()
+if isRFC != '1':
+    wb.close() # save to xlsx file
 
 os.system("pause") # cmd window pause screen

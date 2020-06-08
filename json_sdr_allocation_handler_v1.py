@@ -52,6 +52,7 @@ class LteNR_ca_combo_json:
 
     def get_dl_ca_band_list(self):
         self.dl_ca_list.sort()
+        self.ul_ca_list.sort()
         self.band_list = [item[0] for item in self.dl_ca_list]
 
 def lte_nr_combo_nrx_handle(rx_num, combos_nrx_dict, keys_str_n, output_nrx_combo_json):

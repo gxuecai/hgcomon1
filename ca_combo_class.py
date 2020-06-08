@@ -11,6 +11,7 @@ class LteNR_ca_combo:
         self.dl_ca_list = []
         self.ul_ca_list = []
         self.band_list = []
+        self.ul_band_list = []
         self.ca_string = ca_string
         self.dl_band_num = 0
         self.ul_band_num = 0
@@ -54,7 +55,9 @@ class LteNR_ca_combo:
     # get ca bands list without ant number
     def get_dlca_band_list(self):
         self.dl_ca_list.sort()
+        self.ul_ca_list.sort()
         self.band_list = [item[0] for item in self.dl_ca_list]
+        self.ul_band_list = [item1[0] for item1 in self.ul_ca_list]
 
 
 aaa= LteNR_ca_combo('B48A[4]+B2A[2];A[1]+B46E[2,2,2,2]')

@@ -1,6 +1,7 @@
 import re
 import os
 import xlsxwriter as XW
+from tqdm import tqdm
 
 def compare_combo(rfc_combo, sdr_internal_combo):
 
@@ -73,6 +74,9 @@ row_n = 1
 matched_flag = 0
 col0_style_index = 0
 
+total_combo_number = len(xml_parser_rfc.lte_combo_list+xml_parser_rfc.nr_combo_list+xml_parser_rfc.endc_combo_list)
+pbar = tqdm(total=total_combo_number) # 进度条
+
 for rfc_combo in xml_parser_rfc.lte_combo_list+xml_parser_rfc.nr_combo_list+xml_parser_rfc.endc_combo_list:
     matched_flag = 0
     for sdr_internal_combo in lte_nr_combo_nrx_list[rfc_combo.dl_band_num]:
@@ -101,7 +105,7 @@ for rfc_combo in xml_parser_rfc.lte_combo_list+xml_parser_rfc.nr_combo_list+xml_
             row_n+=1
             # print(rfc_combo.ca_string)
 
-    # combos_i += 1
+    pbar.update(1)
     if matched_flag:
         col0_style_index += 1
         col0_style_index = (col0_style_index % 2)

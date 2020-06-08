@@ -1,6 +1,7 @@
 import xlrd
 import xlwt
 import xlsxwriter as xw
+from tqdm import tqdm
 #from pyExcelerator import *
 
 
@@ -86,6 +87,18 @@ ws.write_row(0, 0, Heading_list, format1)
 #ws.write_column(0,1,'',format2)
 
 wb.close()
+
+# 进度条
+pbar = tqdm(total=200)
+
+# for i in [1,2,3]:
+
+pbar.update(10)
+pbar.update(10)
+pbar.update(10)
+
+pbar.close()
+
 
 
 

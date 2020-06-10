@@ -2,6 +2,8 @@ import re
 import os
 import xlsxwriter as XW
 from tqdm import tqdm
+from subset import get_subset_combo_string
+import ca_combo_class
 
 def compare_combo(rfc_combo, sdr_internal_combo):
 
@@ -70,14 +72,29 @@ ws.write_row(0, 0, Heading_list, format1)
 style_list = [format2, format3]
 row_n = 1
 
+#-----------------Subset------------------
+all_combo_string = [combo_object.ca_string for combo_object in (xml_parser_rfc.lte_combo_list+xml_parser_rfc.nr_combo_list+xml_parser_rfc.endc_combo_list)]
+all_subsets = []
+for combo_string in all_combo_string:
+    all_subsets += get_subset_combo_string(combo_string)
+
+all_subsets_v = list(set(all_subsets))
+all_subsets_v.sort()
+all_subsets_object = []
+fo = open("log.txt", "w")
+for subset_string in all_subsets_v:
+    all_subsets_object.append(ca_combo_class.LteNR_ca_combo(subset_string))
+    fo.write(subset_string + '\n')
+fo.close()
+#-----------------------------------------
 #combos_i = 0
 matched_flag = 0
 col0_style_index = 0
 
-total_combo_number = len(xml_parser_rfc.lte_combo_list+xml_parser_rfc.nr_combo_list+xml_parser_rfc.endc_combo_list)
+total_combo_number = len(all_subsets_object)
 pbar = tqdm(total=total_combo_number) # 进度条
 
-for rfc_combo in xml_parser_rfc.lte_combo_list+xml_parser_rfc.nr_combo_list+xml_parser_rfc.endc_combo_list:
+for rfc_combo in all_subsets_object:
     matched_flag = 0
     for sdr_internal_combo in lte_nr_combo_nrx_list[rfc_combo.dl_band_num]:
 

@@ -35,31 +35,32 @@ except:
 
 # initial excel table
 wb = XW.Workbook('RFC.xlsx')
-ws_signalpath = wb.add_worksheet('sigpaths')
-ws_signalpath.freeze_panes(1, 0)
+ws_signalpath = wb.add_worksheet('Signal Path')
 ws_signalpath.freeze_panes(1, 1)
+ws_antpath = wb.add_worksheet('Ant Switch Path')
+ws_antpath.freeze_panes(1, 1)
 
 format1 = wb.add_format({'font_size': 10, 'font_name': 'Calibri', 'bold': 1, 'font_color': 'white',
                          'fg_color': 'green',
                          'bottom': 1, 'top': 1, 'right': 1, 'left': 1,
                          'align': 'center', 'valign': 'vcenter',
                          'text_wrap': 1}) # 自动换行
-format2 = wb.add_format({'font_size': 8, 'font_name': 'Calibri', 'bold': 0, 'font_color': 'black',
+format2 = wb.add_format({'font_size': 9, 'font_name': 'Calibri', 'bold': 0, 'font_color': 'black',
                          'fg_color': '#F2F2F2',
                          'bottom': 1, 'top': 1, 'right': 1, 'left': 1,
                          'align': 'center', 'valign': 'vcenter',
                          'text_wrap': 1, 'shrink': 0})
-format3 = wb.add_format({'font_size': 8, 'font_name': 'Calibri', 'bold': 0, 'font_color': 'black',
+format3 = wb.add_format({'font_size': 9, 'font_name': 'Calibri', 'bold': 0, 'font_color': 'black',
                          'fg_color': 'white',
                          'bottom': 1, 'top': 1, 'right': 1, 'left': 1,
                          'align': 'center', 'valign': 'vcenter',
                          'text_wrap': 1})
-format4 = wb.add_format({'font_size': 8, 'font_name': 'Calibri', 'bold': 0, 'font_color': 'black',
+format4 = wb.add_format({'font_size': 9, 'font_name': 'Calibri', 'bold': 0, 'font_color': 'black',
                          'fg_color': '#F2F2F2',
                          'bottom': 1, 'top': 1, 'right': 1, 'left': 1,
                          'align': 'center', 'valign': 'vcenter',
                          'text_wrap': 0, 'shrink': 1})
-format5 = wb.add_format({'font_size': 8, 'font_name': 'Calibri', 'bold': 0, 'font_color': 'black',
+format5 = wb.add_format({'font_size': 9, 'font_name': 'Calibri', 'bold': 0, 'font_color': 'black',
                          'fg_color': 'white',
                          'bottom': 1, 'top': 1, 'right': 1, 'left': 1,
                          'align': 'center', 'valign': 'vcenter',
@@ -73,7 +74,122 @@ print('root tag','=========',root.tag,'=========')
 print('root length:', len(root))
 assert isinstance(root, ET.Element)
 
-# get sig_paths node
+#================ @ get ant path ====================
+child_antpath = root.find("ant_switch_paths")
+assert isinstance(child_antpath, ET.Element)
+antpath_to_antnum = {}
+
+Heading_list_ant = ['Path ID', 'Antenna', 'Tuner0', 'Tuner1', 'Tuner2', 'Tuner3', 'XSW0', 'XSW1', 'XSW2',
+                    'GRFC XSW0', 'GRFC XSW1', 'GRFC XSW2']
+col_width_ant = []
+
+for str_write in Heading_list_ant:
+    col_width_ant.append(calc_col_width_by_str(str_write) + 0.5)
+
+ws_antpath.write_row(0, 0, Heading_list_ant, format1)
+row_ant = 1
+
+for ant_path_et in child_antpath:
+    antpath_id = ant_path_et.attrib['path_id']
+    ant_num = ''
+    tuner0 = ''
+    tuner1 = ''
+    tuner2 = ''
+    tuner3 = ''
+    xsw0 = ''
+    xsw1 = ''
+    xsw2 = ''
+    grfc_xsw0 = ''
+    grfc_xsw1 = ''
+    grfc_xsw2 = ''
+
+    ant_num_et = ant_path_et.find('antenna')
+    if isinstance(ant_num_et, ET.Element):
+        ant_num = ant_num_et.text
+
+    module_list_et1 = ant_path_et.find('module_list')
+    if isinstance(module_list_et1, ET.Element):
+        tuner_list = module_list_et1.findall('tuner')
+        if tuner_list:
+            tuner_num = len(tuner_list)
+            tuner_s_list = []
+            for tuner_et in tuner_list:
+                tuner_s_list.append(tuner_et.attrib['module_id'])
+            tuner0 = tuner_s_list[0]
+            if tuner_num > 1:
+                tuner1 = tuner_s_list[1]
+            if tuner_num > 2:
+                tuner2 = tuner_s_list[2]
+            if tuner_num > 3:
+                tuner3 = tuner_s_list[3]
+        xsw_list = module_list_et1.findall('xsw')
+        if xsw_list:
+            xsw_num = len(xsw_list)
+            xsw_s_list = []
+            for xsw_et_i in xsw_list:
+                xsw_s_i = xsw_et_i.attrib['module_id']
+                xsw_s_i += '\n' + xsw_et_i.find('port').text
+                xsw_s_list.append(xsw_s_i)
+            xsw0 = xsw_s_list[0]
+            if xsw_num > 1:
+                xsw1 = xsw_s_list[1]
+            if xsw_num > 2:
+                xsw2 = xsw_s_list[2]
+        grfc_xsw_list = module_list_et1.findall('grfc_xsw')
+        if grfc_xsw_list:
+            grfc_xsw_num = len(grfc_xsw_list)
+            grfc_xsw_s_list = []
+            for grfc_xsw_i in grfc_xsw_list:
+                grfc_xsw_cfg_list = grfc_xsw_i.findall('grfc_config')
+                grfc_xsw_i_s = ''
+                grfc_xsw_i_s += grfc_xsw_i.attrib['module_id'] + '\n'
+                for grfc_xsw_cfg_et in grfc_xsw_cfg_list:
+                    grfc_xsw_i_s += grfc_xsw_cfg_et.find('grfc_type').text + '\n'
+                    grfc_xsw_i_s += grfc_xsw_cfg_et.find('signal').text + '\n'
+                    grfc_xsw_i_s += grfc_xsw_cfg_et.find('enable').text + '\n'
+                    grfc_xsw_i_s += grfc_xsw_cfg_et.find('disable').text + '\n'
+                grfc_xsw_i_s = grfc_xsw_i_s[0:len(grfc_xsw_i_s)-1]
+                grfc_xsw_s_list.append(grfc_xsw_i_s)
+            grfc_xsw0 = grfc_xsw_s_list[0]
+            if grfc_xsw_num > 1:
+                grfc_xsw1 = grfc_xsw_s_list[1]
+            if grfc_xsw_num > 2:
+                grfc_xsw2 = grfc_xsw_s_list[2]
+
+    antpath_to_antnum[antpath_id] = ant_num
+    row_list_ant =[
+        antpath_id,
+        ant_num,
+        tuner0,
+        tuner1,
+        tuner2,
+        tuner3,
+        xsw0,
+        xsw1,
+        xsw2,
+        grfc_xsw0,
+        grfc_xsw1,
+        grfc_xsw2
+    ]
+
+    for col_ant_i in range(len(row_list_ant)):
+        ws_antpath.write(row_ant, col_ant_i, row_list_ant[col_ant_i], format3)
+        col_width_n_ant = calc_col_width_by_str(row_list_ant[col_ant_i])
+        if col_width_n_ant > col_width_ant[col_ant_i]:
+            col_width_ant[col_ant_i] = col_width_n_ant
+    row_ant += 1
+
+    print('antpath_id', antpath_id,
+          'ant_num', ant_num,
+          'tuner', tuner0, tuner1, tuner2, tuner3,
+          'XSW', xsw0, xsw1, xsw2,
+          'GRFC XSW', grfc_xsw0, grfc_xsw1, grfc_xsw2)
+
+for coln in range(len(col_width_ant)):
+    ws_antpath.set_column(coln, coln, col_width_ant[coln])
+ws_antpath.autofilter(0, 0, row_ant - 1, len(col_width_ant))
+
+#================ @get sig_paths node ===================
 child=root.find("sig_paths")
 print_tree_element_info(child,'child')
 assert isinstance(child, ET.Element)

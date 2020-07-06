@@ -196,7 +196,7 @@ assert isinstance(child, ET.Element)
 
 Heading_list = ['Path ID', 'Type\n(rx/tx)', 'PRX?', 'Max\nTX BW', 'PWR\nClass', 'Functionality',
                 'Cal Ref\nsigpath', 'Path\noverride\nIndex', 'MCS\n256QAM', 'Disabled', 'FBRX', 'Sigpath\nGroup',
-                'Ant SW\npath', 'Split band\nsigpath Map', 'Split Band', 'Tech Bands', 'TRX', 'ELNA0', 'ELNA1', 'PA', 'PAPM', 'PAPM HUB',
+                'Ant SW\npath', 'ASP', 'Split band\nsigpath Map', 'Split Band', 'Tech Bands', 'TRX', 'ELNA0', 'ELNA1', 'PA', 'PAPM', 'PAPM HUB',
                 'ASM0', 'ASM1', 'ASM2', 'ASM3', 'ASM4', 'GRFC ASM0', 'GRFC ASM1', 'GRFC ASM2', 'THERM', 'THERM MITIGATION']
 col_width_s = []
 
@@ -222,6 +222,7 @@ for sig_path_i in child:
     fbrx = ''
     SPG = ''
     ant_sw_path = ''
+    ASP = ''
     split_band_sig_path_map = ''
     split_band_channel_range = ''
     tech_bands = ''
@@ -298,8 +299,10 @@ for sig_path_i in child:
         for ant_sw_i in ant_sw_path_et:
             ant_i += 1
             ant_sw_path += ant_sw_i[0].text
+            ASP += antpath_to_antnum[ant_sw_i[0].text]
             if ant_i < ant_num:
                 ant_sw_path += ' '
+                ASP += ' '
 
     band_split_channel_list_et = sig_path_i.find('band_split_channel_list')
     if isinstance(band_split_channel_list_et, ET.Element):
@@ -456,6 +459,7 @@ for sig_path_i in child:
                         fbrx,
                         SPG,
                         ant_sw_path,
+                        ASP,
                         split_band_sig_path_map,
                         split_band_channel_range,
                         tech_bands,

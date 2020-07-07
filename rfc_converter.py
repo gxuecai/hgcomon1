@@ -39,6 +39,8 @@ ws_signalpath = wb.add_worksheet('Signal Path')
 ws_signalpath.freeze_panes(1, 1)
 ws_antpath = wb.add_worksheet('Ant Switch Path')
 ws_antpath.freeze_panes(1, 1)
+ws_fbrx = wb.add_worksheet('FBRX Path')
+ws_fbrx.freeze_panes(1, 1)
 
 format1 = wb.add_format({'font_size': 10, 'font_name': 'Calibri', 'bold': 1, 'font_color': 'white',
                          'fg_color': 'green',
@@ -551,5 +553,126 @@ for sig_path_i in child:
 for coln in range(len(col_width_s)):
     ws_signalpath.set_column(coln, coln, col_width_s[coln])
 ws_signalpath.autofilter(0, 0, row_n, len(col_width_s))
+
+#================ @ get FBRX path ====================
+child_fbrx_path = root.find("fbrx_paths")
+assert isinstance(child_fbrx_path, ET.Element)
+Heading_list_fbrx = ['Path\nID', 'TRX', 'ASM', 'ASM1', 'GRFC ASM', 'GRFC ASM1', 'GRFC\nCoupler', 'Coupler0', 'Coupler1',
+                    'Coupler2', 'Coupler3', 'Coupler4']
+col_width_fbrx = []
+
+for str_write in Heading_list_fbrx:
+    col_width_fbrx.append(calc_col_width_by_str(str_write) + 0.5)
+
+ws_fbrx.write_row(0, 0, Heading_list_fbrx, format1)
+row_fbrx = 1
+
+for fbrx_path_i in child_fbrx_path:
+    assert isinstance(fbrx_path_i, ET.Element)
+    fbrx_pathid = fbrx_path_i.attrib['path_id']
+    fbrx_trx = ''
+    fbrx_asm = ''
+    fbrx_asm1 = ''
+    grfc_asm = ''
+    grfc_asm1 = ''
+    grfc_coupler = ''
+    coupler0 = ''
+    coupler1 = ''
+    coupler2 = ''
+    coupler3 = ''
+    coupler4 = ''
+
+    module_list_fbrx_et = fbrx_path_i.find('module_list')
+
+    trx_fbrx_et = module_list_fbrx_et.find('trx')
+    fbrx_trx += trx_fbrx_et.attrib['module_id'] + '\n'
+    fbrx_trx += trx_fbrx_et.find('port').text
+
+    asm_fbrx_list = module_list_fbrx_et.findall('asm')
+    if asm_fbrx_list:
+        fbrx_asm_num = len(asm_fbrx_list)
+        fbrx_asm_s_list = []
+        for asm_fbrx_i in asm_fbrx_list:
+            fbrx_asm_s = asm_fbrx_i.attrib['module_id'] + '\n'
+            fbrx_asm_s += asm_fbrx_i.find('port').text
+            fbrx_asm_s_list.append(fbrx_asm_s)
+        fbrx_asm = fbrx_asm_s_list[0]
+        if fbrx_asm_num > 1:
+            fbrx_asm1 = fbrx_asm_s_list[1]
+
+    grfc_asm_fbrx_list = module_list_fbrx_et.findall('grfc_asm')
+    if grfc_asm_fbrx_list:
+        grfc_asm_num_fbrx = len(grfc_asm_fbrx_list)
+        grfc_asm_fbrx_s_list = []
+        for grfc_asm_fbrx_i in grfc_asm_fbrx_list:
+            grfc_asm_fbrx_s = grfc_asm_fbrx_i.attrib['module_id'] + '\n'
+            grfc_config_fbrx = grfc_asm_fbrx_i.find('grfc_config')
+            grfc_asm_fbrx_s += grfc_config_fbrx.find('grfc_type').text + '\n'
+            grfc_asm_fbrx_s += grfc_config_fbrx.find('signal').text + '\n'
+            grfc_asm_fbrx_s += grfc_config_fbrx.find('enable').text + '\n'
+            grfc_asm_fbrx_s += grfc_config_fbrx.find('disable').text
+            grfc_asm_fbrx_s_list.append(grfc_asm_fbrx_s)
+        grfc_asm = grfc_asm_fbrx_s_list[0]
+        if grfc_asm_num_fbrx > 1:
+            grfc_asm1 = grfc_asm_fbrx_s_list[1]
+
+    # grfc_coupler
+
+    coupler_list = module_list_fbrx_et.findall('coupler')
+    if coupler_list:
+        coupler_num = len(coupler_list)
+        coupler_s_list = []
+        for coupler_i in coupler_list:
+            coupler_s = coupler_i.attrib['module_id'] + '\n'
+            coupler_s += coupler_i.find('port').text + '\n'
+            pos = coupler_i.find('position')
+            if isinstance(pos, ET.Element):
+                coupler_s += pos.text + '\n'
+            atten_fwd = coupler_i.find('atten_fwd')
+            if isinstance(atten_fwd, ET.Element):
+                coupler_s += atten_fwd.text + '\n'
+            atten_rev = coupler_i.find('atten_rev')
+            if isinstance(atten_rev, ET.Element):
+                coupler_s += atten_rev.text + '\n'
+            coupler_s = coupler_s[0:len(coupler_s)-1]
+            coupler_s_list.append(coupler_s)
+        coupler0 = coupler_s_list[0]
+        if coupler_num > 1:
+            coupler1 = coupler_s_list[1]
+        if coupler_num > 2:
+            coupler2 = coupler_s_list[2]
+        if coupler_num > 3:
+            coupler3 = coupler_s_list[3]
+        if coupler_num > 4:
+            coupler4 = coupler_s_list[4]
+
+    row_list_fbrx = [
+        fbrx_pathid,
+        fbrx_trx,
+        fbrx_asm,
+        fbrx_asm1,
+        grfc_asm,
+        grfc_asm1,
+        grfc_coupler,
+        coupler0,
+        coupler1,
+        coupler2,
+        coupler3,
+        coupler4,
+    ]
+
+    for col_fbrx_i in range(len(row_list_fbrx)):
+        ws_fbrx.write(row_fbrx, col_fbrx_i, row_list_fbrx[col_fbrx_i], format3)
+        col_width_n_fbrx = calc_col_width_by_str(row_list_fbrx[col_fbrx_i])
+        if col_width_n_fbrx > col_width_fbrx[col_fbrx_i]:
+            col_width_fbrx[col_fbrx_i] = col_width_n_fbrx
+    row_fbrx += 1
+
+    print('fbrx_pathid', fbrx_pathid, 'fbrx_trx',fbrx_trx, 'fbrx_asm', fbrx_asm, fbrx_asm1, 'grfc_asm', grfc_asm, grfc_asm1,
+          'coupler', coupler0, coupler1, coupler2, coupler3, coupler4)
+
+for coln in range(len(col_width_fbrx)):
+    ws_fbrx.set_column(coln, coln, col_width_fbrx[coln])
+ws_fbrx.autofilter(0, 0, row_fbrx - 1, len(col_width_fbrx))
 
 wb.close() # save to xlsx file

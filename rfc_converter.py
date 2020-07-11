@@ -5,6 +5,7 @@ import re
 
 
 def calc_col_width_by_str(write_str):
+    write_str = str(write_str)
     str_list = re.split(r'\n', write_str)
     str_len_list = [len(item) for item in str_list]
     return max(str_len_list)
@@ -35,6 +36,8 @@ except:
 
 # initial excel table
 wb = XW.Workbook('RFC.xlsx')
+ws_phydevice = wb.add_worksheet('Physical Devices')
+ws_phydevice.freeze_panes(0, 1)
 ws_signalpath = wb.add_worksheet('Signal Path')
 ws_signalpath.freeze_panes(1, 1)
 ws_antpath = wb.add_worksheet('Ant Switch Path')
@@ -67,6 +70,11 @@ format5 = wb.add_format({'font_size': 9, 'font_name': 'Calibri', 'bold': 0, 'fon
                          'bottom': 1, 'top': 1, 'right': 1, 'left': 1,
                          'align': 'center', 'valign': 'vcenter',
                          'text_wrap': 0, 'shrink': 1})
+format6 = wb.add_format({'font_size': 11, 'font_name': 'Calibri', 'bold': 1, 'font_color': 'red',
+                         'fg_color': 'yellow',
+                         'bottom': 1, 'top': 1, 'right': 1, 'left': 1,
+                         'align': 'center', 'valign': 'vcenter',
+                         'text_wrap': 1}) # 自动换行
 
 root=tree.getroot()
 
@@ -674,5 +682,244 @@ for fbrx_path_i in child_fbrx_path:
 for coln in range(len(col_width_fbrx)):
     ws_fbrx.set_column(coln, coln, col_width_fbrx[coln])
 ws_fbrx.autofilter(0, 0, row_fbrx - 1, len(col_width_fbrx))
+
+
+#================ @ get physical device list ====================
+child_physical_device = root.find("phy_device_list")
+
+index = 0
+GRFC_device_list = []
+RFFE_device_list = []
+QLINK_list = []
+Alt_rffe_device_list = []
+for device_et in child_physical_device:
+    device_tag = device_et.tag
+    device_str_list = []
+    device_str_list.append(index)
+    if device_tag == 'device':
+        type = device_et.attrib['type']
+        if re.search('GRFC', type):
+            device_str_list.append(type)
+            grfc_et = device_et.find('grfc')
+            if isinstance(grfc_et, ET.Element):
+                device_str_list.append(grfc_et.find('comm_master').text)
+            grfc_module_et = device_et.find('module_list')
+            Mod0 = ''
+            Mod1 = ''
+            Mod2 = ''
+            Mod_list = []
+            for module_et in grfc_module_et:
+                Mod_list.append(module_et.attrib['id']+'\n'+module_et.find('type').text)
+            grfc_Mod_num = len(Mod_list)
+            if grfc_Mod_num > 0:
+                Mod0 = Mod_list[0]
+            if grfc_Mod_num > 1:
+                Mod1 = Mod_list[1]
+            if grfc_Mod_num > 2:
+                Mod2 = Mod_list[2]
+            device_str_list.append(Mod0)
+            device_str_list.append(Mod1)
+            device_str_list.append(Mod2)
+            GRFC_device_list.append(device_str_list)
+        elif re.search('SDR', type):
+            device_str_list.append(type)
+            qlink_et = device_et.find('qlink')
+            if isinstance(qlink_et, ET.Element):
+                device_str_list.append(qlink_et.find('channel').text)
+            qlink_module_list = device_et.find('module_list')
+            mod0 = ''
+            mod1 = ''
+            mod_list = []
+            for mod_et in qlink_module_list:
+                mod_list.append(mod_et.attrib['id']+'\n'+mod_et.find('type').text)
+            mod0 = mod_list[0]
+            if len(mod_list) > 1:
+                mod1 = mod_list[1]
+            device_str_list.append(mod0)
+            device_str_list.append(mod1)
+            QLINK_list.append(device_str_list)
+
+        else:
+            device_str_list.append(type)
+            rffe = device_et.find('rffe')
+            if isinstance(rffe, ET.Element):
+                device_str_list.append(rffe.find('protocol_version').text)
+                device_str_list.append(rffe.find('comm_master').text)
+                device_str_list.append(rffe.find('channel').text)
+                device_str_list.append(rffe.find('manufacturer_id').text)
+                device_str_list.append(rffe.find('product_id').text)
+                device_str_list.append(rffe.find('product_rev').text)
+                device_str_list.append(rffe.find('default_usid').text)
+                device_str_list.append(rffe.find('assigned_usid').text)
+            module_et_list = device_et.find('module_list')
+            mod_list = ['','','','','','','']
+            mod_list_s = []
+            for module_et in module_et_list:
+                id_s = module_et.attrib['id']
+                specifier = ''
+                specifier_et = module_et.find('specifier')
+                if isinstance(specifier_et, ET.Element):
+                    specifier = specifier_et.text
+                type_mod = ''
+                type_mod_et = module_et.find('type')
+                if isinstance(type_mod_et, ET.Element):
+                    type_mod = type_mod_et.text
+                mod_list_s.append(id_s+'\n'+specifier+'\n'+type_mod)
+            rffe_mod_num = len(mod_list_s)
+            for i_num in range(len(mod_list_s)):
+                if i_num < len(mod_list):
+                    mod_list[i_num] = mod_list_s[i_num]
+            for mod_i in mod_list:
+                device_str_list.append(mod_i)
+
+            RFFE_device_list.append(device_str_list)
+    elif device_tag == 'alternate_devices':
+        device_et_primary = device_et[0]
+        device_str_list.append(device_et_primary.attrib['type'])
+        rffe = device_et_primary.find('rffe')
+        if isinstance(rffe, ET.Element):
+            device_str_list.append(rffe.find('protocol_version').text)
+            device_str_list.append(rffe.find('comm_master').text)
+            device_str_list.append(rffe.find('channel').text)
+            device_str_list.append(rffe.find('manufacturer_id').text)
+            device_str_list.append(rffe.find('product_id').text)
+            device_str_list.append(rffe.find('product_rev').text)
+            device_str_list.append(rffe.find('default_usid').text)
+            device_str_list.append(rffe.find('assigned_usid').text)
+        module_et_list = device_et_primary.find('module_list')
+        mod_list = ['', '', '', '', '', '', '']
+        mod_list_s = []
+        for module_et in module_et_list:
+            id_s = module_et.attrib['id']
+            specifier = ''
+            specifier_et = module_et.find('specifier')
+            if isinstance(specifier_et, ET.Element):
+                specifier = specifier_et.text
+            type_mod = ''
+            type_mod_et = module_et.find('type')
+            if isinstance(type_mod_et, ET.Element):
+                type_mod = type_mod_et.text
+            mod_list_s.append(id_s + '\n' + specifier + '\n' + type_mod)
+        rffe_mod_num = len(mod_list_s)
+        for i_num in range(len(mod_list_s)):
+            if i_num < len(mod_list):
+                mod_list[i_num] = mod_list_s[i_num]
+        for mod_i in mod_list:
+            device_str_list.append(mod_i)
+        RFFE_device_list.append(device_str_list)
+
+        device_et_alt = device_et[1]
+        device_str_list_alt = []
+        device_str_list_alt.append(index)
+        device_str_list_alt.append(device_et_alt.attrib['type'])
+        rffe_alt = device_et_alt.find('rffe')
+        device_str_list_alt.append(rffe_alt.find('manufacturer_id').text)
+        device_str_list_alt.append(rffe_alt.find('product_id').text)
+        device_str_list_alt.append(rffe_alt.find('product_rev').text)
+
+        Alt_rffe_device_list.append(device_str_list_alt)
+        print(device_str_list_alt)
+
+    index += 1
+
+    print(device_str_list)
+
+ws_phydevice.write(0, 0, 'RFFE DEVICES', format6)
+ws_phydevice.set_row(0, 25)
+FirstCol_str = ['Index', 'Physical Device', 'Proc Ver', 'Comm Master', 'Chan', 'MID', 'PID', 'REV', 'Default USID', 'Assigned USID',
+                'Logical Device0\nSpecifier\nType', 'Logical Device1\nSpecifier\nType', 'Logical Device2\nSpecifier\nType', 'Logical Device3\nSpecifier\nType',
+                'Logical Device4\nSpecifier\nType', 'Logical Device5\nSpecifier\nType', 'Logical Device6\nSpecifier\nType']
+ws_phydevice.write_column(1, 0, FirstCol_str, format1)
+col_width_list = []
+coln_width_record = []
+for col_s in FirstCol_str:
+    col_width_list.append(calc_col_width_by_str(col_s) + 0.5)
+ws_phydevice.set_column(0,0, max(col_width_list))
+coln_width_record.append( max(col_width_list))
+col_idx = 1
+
+for rffe_device_col in RFFE_device_list:
+    if col_idx % 2:
+        ws_phydevice.write_column(1, col_idx, rffe_device_col, format3)
+    else:
+        ws_phydevice.write_column(1, col_idx, rffe_device_col, format2)
+    col_width_list = []
+    for col_s in rffe_device_col:
+        col_width_list.append(calc_col_width_by_str(col_s) + 0.8)
+    ws_phydevice.set_column(col_idx, col_idx, max(col_width_list))
+    coln_width_record.append(max(col_width_list))
+    col_idx += 1
+
+row_idx = len(FirstCol_str) + 1
+if Alt_rffe_device_list:
+    ws_phydevice.write(row_idx, 0, 'ALT RFFE\nDEVICES', format6)
+    ws_phydevice.set_row(row_idx, 30)
+    row_idx += 1
+    FirstCol_str_ALT = ['Index', 'Type', 'MID', 'PID', 'REV']
+    ws_phydevice.write_column(row_idx, 0, FirstCol_str_ALT, format1)
+    col_idx = 1
+
+    for alt_device_col in Alt_rffe_device_list:
+        if col_idx % 2:
+            ws_phydevice.write_column(row_idx, col_idx, alt_device_col, format3)
+        else:
+            ws_phydevice.write_column(row_idx, col_idx, alt_device_col, format2)
+
+        col_width_list = []
+        for col_s in alt_device_col:
+            col_width_list.append(calc_col_width_by_str(col_s) + 0.8)
+        if max(col_width_list) > coln_width_record[col_idx]:
+            ws_phydevice.set_column(col_idx, col_idx, max(col_width_list))
+            coln_width_record[col_idx] = max(col_width_list)
+        col_idx += 1
+    row_idx += len(FirstCol_str_ALT)
+
+if GRFC_device_list:
+    ws_phydevice.write(row_idx, 0, 'GRFC', format6)
+    ws_phydevice.set_row(row_idx, 25)
+    row_idx += 1
+    FirstCol_str_GRFC = ['Index', 'Type', 'Comm Master', 'Mod0\nType', 'Mod1\nType','Mod2\nType']
+    ws_phydevice.write_column(row_idx, 0, FirstCol_str_GRFC, format1)
+    col_idx = 1
+
+    for GRFC_device_col in GRFC_device_list:
+        if col_idx % 2:
+            ws_phydevice.write_column(row_idx, col_idx, GRFC_device_col, format3)
+        else:
+            ws_phydevice.write_column(row_idx, col_idx, GRFC_device_col, format2)
+
+        col_width_list = []
+        for col_s in GRFC_device_col:
+            col_width_list.append(calc_col_width_by_str(col_s) + 0.8)
+
+        if col_idx > len(coln_width_record):
+            ws_phydevice.set_column(col_idx, col_idx, max(col_width_list))
+            coln_width_record.append(max(col_width_list))
+        else:
+            if max(col_width_list) > coln_width_record[col_idx]:
+                ws_phydevice.set_column(col_idx, col_idx, max(col_width_list))
+                coln_width_record[col_idx] = max(col_width_list)
+        col_idx += 1
+    row_idx += len(FirstCol_str_GRFC)
+
+ws_phydevice.write(row_idx, 0, 'QLINK', format6)
+ws_phydevice.set_row(row_idx, 25)
+row_idx += 1
+FirstCol_str_QLINK = ['Index', 'Type', 'QLINK ID', 'Mod0\nType', 'Mod1\nType']
+ws_phydevice.write_column(row_idx, 0, FirstCol_str_QLINK, format1)
+col_idx = 1
+
+for QLINK_device_col in QLINK_list:
+    if col_idx % 2:
+        ws_phydevice.write_column(row_idx, col_idx, QLINK_device_col, format3)
+    else:
+        ws_phydevice.write_column(row_idx, col_idx, QLINK_device_col, format2)
+
+    col_width_list = []
+    for col_s in QLINK_device_col:
+        col_width_list.append(calc_col_width_by_str(col_s) + 0.8)
+    if max(col_width_list) > coln_width_record[col_idx]:
+        ws_phydevice.set_column(col_idx, col_idx, max(col_width_list))
+    col_idx += 1
 
 wb.close() # save to xlsx file

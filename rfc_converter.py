@@ -10,6 +10,24 @@ def calc_col_width_by_str(write_str):
     str_len_list = [len(item) for item in str_list]
     return max(str_len_list)
 
+def adjust_concurrency_number_str_col_width(num_col_width):
+
+    if num_col_width > 90:
+        num_col_width -= 22
+    elif num_col_width > 80:
+        num_col_width -= 16
+    elif num_col_width > 70:
+        num_col_width -= 13
+    elif num_col_width > 60:
+        num_col_width -= 10
+    elif num_col_width > 50:
+        num_col_width -= 6
+    elif num_col_width > 40:
+        num_col_width -= 4
+
+    return num_col_width
+
+
 
 '''
 Python etree handle XML file
@@ -44,6 +62,7 @@ ws_antpath = wb.add_worksheet('Ant Switch Path')
 ws_antpath.freeze_panes(1, 1)
 ws_fbrx = wb.add_worksheet('FBRX Path')
 ws_fbrx.freeze_panes(1, 1)
+ws_Concurrency = wb.add_worksheet('Concurrency Restrictions')
 
 format1 = wb.add_format({'font_size': 10, 'font_name': 'Calibri', 'bold': 1, 'font_color': 'white',
                          'fg_color': 'green',
@@ -921,5 +940,119 @@ for QLINK_device_col in QLINK_list:
     if max(col_width_list) > coln_width_record[col_idx]:
         ws_phydevice.set_column(col_idx, col_idx, max(col_width_list))
     col_idx += 1
+
+#================ @ Concurrency Restriction ====================
+child_concurrency = root.find("concurrency_restriction_exception_list")
+et_allow_list = child_concurrency.find('allowed_list')
+
+allow_list_sigpath_a = []
+allow_list_sigpath_b = []
+
+for group_et in et_allow_list:
+    sigpath_a_et = group_et.find('sig_path_a')
+    sigpath_a_str = ''
+    for sigpath_et in sigpath_a_et:
+        sigpath_a_str += (sigpath_et.text+' ')
+    sigpath_a_str = sigpath_a_str[0:len(sigpath_a_str) - 1]
+    allow_list_sigpath_a.append(sigpath_a_str)
+
+    sigpath_a_et = group_et.find('sig_path_b')
+    sigpath_a_str = ''
+    for sigpath_et in sigpath_a_et:
+        sigpath_a_str += (sigpath_et.text + ' ')
+    sigpath_a_str = sigpath_a_str[0:len(sigpath_a_str) - 1]
+    allow_list_sigpath_b.append(sigpath_a_str)
+
+ws_Concurrency.set_row(0, 25)
+row_allow_list = 0
+col_allow_list = 0
+
+if allow_list_sigpath_a:
+    col_width_allow_list_A = []
+    col_width_allow_list_B = []
+    ws_Concurrency.write(row_allow_list, col_allow_list, 'ALLOWED LIST', format1)
+    row_allow_list += 1
+    col_width_allow_list_A.append(calc_col_width_by_str('ALLOWED LIST') + 0.8)
+    ws_Concurrency.write(row_allow_list, col_allow_list, 'Sig Path A', format2)
+    row_allow_list += 1
+    col_width_allow_list_A.append(calc_col_width_by_str('Sig Path A') + 0.8)
+
+    for list_num in range(0, len(allow_list_sigpath_a)):
+        ws_Concurrency.write(row_allow_list, col_allow_list, allow_list_sigpath_a[list_num], format2)
+        row_allow_list += 1
+        col_width_allow_list_A.append(calc_col_width_by_str(allow_list_sigpath_a[list_num]) + 0.8)
+    ws_Concurrency.set_column(col_allow_list, col_allow_list,adjust_concurrency_number_str_col_width(max(col_width_allow_list_A)))
+    col_allow_list += 1
+
+    row_allow_list = 1
+    ws_Concurrency.write(row_allow_list, col_allow_list, 'Sig Path B', format2)
+    row_allow_list += 1
+    col_width_allow_list_B.append(calc_col_width_by_str('Sig Path B') + 0.8)
+
+    for list_num in range(0, len(allow_list_sigpath_b)):
+        ws_Concurrency.write(row_allow_list, col_allow_list, allow_list_sigpath_b[list_num], format2)
+        row_allow_list += 1
+        col_width_allow_list_B.append(calc_col_width_by_str(allow_list_sigpath_b[list_num]) + 0.8)
+
+    ws_Concurrency.set_column(col_allow_list, col_allow_list,adjust_concurrency_number_str_col_width(max(col_width_allow_list_B)))
+
+    col_allow_list += 1
+    ws_Concurrency.set_column(col_allow_list, col_allow_list,3)
+    col_allow_list += 1
+
+et_disallow_list = child_concurrency.find('disallowed_list')
+
+disallow_list_sigpath_a = []
+disallow_list_sigpath_b = []
+
+for group_et in et_disallow_list:
+    sigpath_a_et = group_et.find('sig_path_a')
+    sigpath_a_str = ''
+    for sigpath_et in sigpath_a_et:
+        sigpath_a_str += (sigpath_et.text+' ')
+    sigpath_a_str = sigpath_a_str[0:len(sigpath_a_str) - 1]
+    disallow_list_sigpath_a.append(sigpath_a_str)
+
+    sigpath_a_et = group_et.find('sig_path_b')
+    sigpath_a_str = ''
+    for sigpath_et in sigpath_a_et:
+        sigpath_a_str += (sigpath_et.text + ' ')
+    sigpath_a_str = sigpath_a_str[0:len(sigpath_a_str) - 1]
+    disallow_list_sigpath_b.append(sigpath_a_str)
+
+row_allow_list = 0
+if disallow_list_sigpath_a:
+    col_width_disallow_list_A = []
+    col_width_disallow_list_B = []
+    ws_Concurrency.write(row_allow_list, col_allow_list, 'DISALLOWED LIST', format1)
+    row_allow_list += 1
+    col_width_disallow_list_A.append(calc_col_width_by_str('DISALLOWED LIST') + 0.8)
+
+    ws_Concurrency.write(row_allow_list, col_allow_list, 'Sig Path A', format3)
+    row_allow_list += 1
+    col_width_disallow_list_A.append(calc_col_width_by_str('Sig Path A') + 0.8)
+
+    for list_num in range(0, len(disallow_list_sigpath_a)):
+        ws_Concurrency.write(row_allow_list, col_allow_list, disallow_list_sigpath_a[list_num], format3)
+        row_allow_list += 1
+        col_width_disallow_list_A.append(calc_col_width_by_str(disallow_list_sigpath_a[list_num]) + 0.8)
+    ws_Concurrency.set_column(col_allow_list, col_allow_list,adjust_concurrency_number_str_col_width(max(col_width_disallow_list_A)))
+    col_allow_list += 1
+
+    row_allow_list = 1
+    ws_Concurrency.write(row_allow_list, col_allow_list, 'Sig Path B', format2)
+    row_allow_list += 1
+    col_width_disallow_list_B.append(calc_col_width_by_str('Sig Path B') + 0.8)
+
+    for list_num in range(0, len(disallow_list_sigpath_b)):
+        ws_Concurrency.write(row_allow_list, col_allow_list, disallow_list_sigpath_b[list_num], format3)
+        row_allow_list += 1
+        col_width_disallow_list_B.append(calc_col_width_by_str(disallow_list_sigpath_b[list_num]) + 0.8)
+
+    ws_Concurrency.set_column(col_allow_list, col_allow_list, adjust_concurrency_number_str_col_width(max(col_width_disallow_list_B)))
+
+    col_allow_list += 1
+    ws_Concurrency.set_column(col_allow_list, col_allow_list, 3)
+    col_allow_list += 1
 
 wb.close() # save to xlsx file

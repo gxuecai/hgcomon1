@@ -31,6 +31,49 @@ def adjust_concurrency_number_str_col_width(num_col_width):
 
     return num_col_width
 
+def get_sigpath_sel_trx_group_str(tech_sel_et):
+    trx_group = [[], [], [], [], [], [], [], [], [], []]
+    selection_path_group_et = tech_sel_et.find('sig_path_selection_group')
+    if isinstance(selection_path_group_et, ET.Element):
+        sel_path_group_et = selection_path_group_et.find('sig_path_sel_group')
+        group_list = sel_path_group_et.findall('group')
+
+        if group_list:
+            for group_et in group_list:
+                tx_group_list = group_et.findall('tx_operation')
+                group_index = 0
+                if tx_group_list:
+                    for tx_et in tx_group_list:
+                        tx_info_s = ''
+                        tx_info_s += tx_et.find('band').attrib['name']
+                        tx_info_s += '['
+                        tx_info_s += tx_et.find('band').find('tx').find('sig_path').text
+                        tx_info_s += ']'
+                        trx_group[group_index].append(tx_info_s)
+                        group_index += 1
+
+                for tx_num in range(group_index, 2):
+                    trx_group[tx_num].append('')
+
+                rx_group_list = group_et.findall('rx_operation')
+                group_index = 2
+                if rx_group_list:
+                    for rx_et in rx_group_list:
+                        rx_info_s = ''
+                        rx_info_s += rx_et.find('band').attrib['name']
+                        rx_info_s += '['
+                        rx_sig_path_list = rx_et.find('band').find('rx').findall('sig_path')
+                        for rx_sig_path_et in rx_sig_path_list:
+                            rx_info_s += rx_sig_path_et.text
+                            rx_info_s += ' '
+                        rx_info_s = rx_info_s[0:len(rx_info_s) - 1]
+                        rx_info_s += ']'
+                        trx_group[group_index].append(rx_info_s)
+                        group_index += 1
+                    for rx_num in range(group_index, 10):
+                        trx_group[rx_num].append('')
+    return trx_group
+
 
 
 '''
@@ -68,6 +111,8 @@ ws_fbrx = wb.add_worksheet('FBRX Path')
 ws_fbrx.freeze_panes(1, 1)
 ws_Concurrency = wb.add_worksheet('Concurrency Restrictions')
 ws_Concurrency.freeze_panes(2, 0)
+ws_sigpath_sel = wb.add_worksheet('Signal Path Selection Table')
+ws_sigpath_sel.freeze_panes(2, 0)
 
 format1 = wb.add_format({'font_size': 10, 'font_name': 'Calibri', 'bold': 1, 'font_color': 'white',
                          'fg_color': 'green',
@@ -1171,6 +1216,78 @@ if isinstance(et_msim_disallow_list, ET.Element):
     col_allow_list += 1
     ws_Concurrency.set_column(col_allow_list, col_allow_list, 3)
     col_allow_list += 1
+
+#================ @ Signal Path Selection Table ====================
+child_signalpathselection = root.find("signal_path_selection_list_v2")
+sigpath_sel_row = 0
+sigpath_sel_col = 0
+ws_sigpath_sel.set_row(0, 25)
+sigpath_group_line = ['TX Group 0', 'TX Group 1', 'RX Group 0', 'RX Group 1', 'RX Group 2', 'RX Group 3', 'RX Group 4', 'RX Group 5', 'RX Group 6', 'RX Group 7']
+if isinstance(child_signalpathselection, ET.Element):
+
+    tech_sel_et = child_signalpathselection.find('sig_path_sel_lte_group')
+    if isinstance(tech_sel_et, ET.Element):
+        trx_group = get_sigpath_sel_trx_group_str(tech_sel_et)
+        ws_sigpath_sel.merge_range(0, sigpath_sel_col, 0, sigpath_sel_col+9,'LTE Signal Path Selection Group', format1)
+        for tech_col in range(0,10):
+            sigpath_sel_row = 1
+            col_width = calc_col_width_by_str(sigpath_group_line[tech_col])
+            ws_sigpath_sel.write(sigpath_sel_row, tech_col+sigpath_sel_col, sigpath_group_line[tech_col], format2)
+            sigpath_sel_row += 1
+            for group_str in trx_group[tech_col]:
+                ws_sigpath_sel.write(sigpath_sel_row, tech_col + sigpath_sel_col, group_str, format3)
+                if calc_col_width_by_str(group_str) > col_width:
+                    col_width = calc_col_width_by_str(group_str)
+                sigpath_sel_row += 1
+            ws_sigpath_sel.set_column(tech_col + sigpath_sel_col, tech_col + sigpath_sel_col, col_width)
+
+        sigpath_sel_col += 10
+        ws_sigpath_sel.set_column(sigpath_sel_col, sigpath_sel_col, 3)
+        sigpath_sel_col += 1
+
+    tech_sel_et = child_signalpathselection.find('sig_path_sel_nr5g_group')
+    if isinstance(tech_sel_et, ET.Element):
+        trx_group = get_sigpath_sel_trx_group_str(tech_sel_et)
+        ws_sigpath_sel.merge_range(0, sigpath_sel_col, 0, sigpath_sel_col + 9, 'NR5G Signal Path Selection Group',
+                                   format1)
+        for tech_col in range(0,10):
+            sigpath_sel_row = 1
+            col_width = calc_col_width_by_str(sigpath_group_line[tech_col])
+            ws_sigpath_sel.write(sigpath_sel_row, tech_col+sigpath_sel_col, sigpath_group_line[tech_col], format2)
+            sigpath_sel_row += 1
+            for group_str in trx_group[tech_col]:
+                ws_sigpath_sel.write(sigpath_sel_row, tech_col + sigpath_sel_col, group_str, format3)
+                if calc_col_width_by_str(group_str) > col_width:
+                    col_width = calc_col_width_by_str(group_str)
+                sigpath_sel_row += 1
+            ws_sigpath_sel.set_column(tech_col + sigpath_sel_col, tech_col + sigpath_sel_col, col_width)
+
+        sigpath_sel_col += 10
+        ws_sigpath_sel.set_column(sigpath_sel_col, sigpath_sel_col, 3)
+        sigpath_sel_col += 1
+
+    tech_sel_et = child_signalpathselection.find('sig_path_sel_lte_nr5g_group')
+    if isinstance(tech_sel_et, ET.Element):
+        trx_group = get_sigpath_sel_trx_group_str(tech_sel_et)
+        ws_sigpath_sel.merge_range(0, sigpath_sel_col, 0, sigpath_sel_col + 9, 'LTE/NR5G Signal Path Selection Group',
+                                   format1)
+        for tech_col in range(0, 10):
+            sigpath_sel_row = 1
+            col_width = calc_col_width_by_str(sigpath_group_line[tech_col])
+            ws_sigpath_sel.write(sigpath_sel_row, tech_col + sigpath_sel_col, sigpath_group_line[tech_col], format2)
+            sigpath_sel_row += 1
+            for group_str in trx_group[tech_col]:
+                ws_sigpath_sel.write(sigpath_sel_row, tech_col + sigpath_sel_col, group_str, format3)
+                if calc_col_width_by_str(group_str) > col_width:
+                    col_width = calc_col_width_by_str(group_str)
+                sigpath_sel_row += 1
+            ws_sigpath_sel.set_column(tech_col + sigpath_sel_col, tech_col + sigpath_sel_col, col_width)
+
+        sigpath_sel_col += 10
+        ws_sigpath_sel.set_column(sigpath_sel_col, sigpath_sel_col, 3)
+        sigpath_sel_col += 1
+
+
 
 
 wb.close() # save to xlsx file

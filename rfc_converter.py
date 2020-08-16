@@ -74,7 +74,26 @@ def get_sigpath_sel_trx_group_str(tech_sel_et):
                         trx_group[rx_num].append('')
     return trx_group
 
+def get_antpath_restriction_tbl(allow_disallow_et):
+    antpath_restriction = [[], []]
+    antpath_group_list = allow_disallow_et.findall('group')
 
+    if antpath_group_list:
+        for antpath_group_et in antpath_group_list:
+            antpath_s = ''
+            antpath_a_list = antpath_group_et.find('sig_path_a').findall('sig_path')
+            for antpath_a_et in antpath_a_list:
+                antpath_s += antpath_a_et.text + ' '
+            antpath_s = antpath_s[0:len(antpath_s) - 1]
+            antpath_restriction[0].append(antpath_s)
+
+            antpath_s = ''
+            antpath_b_list = antpath_group_et.find('sig_path_b').findall('sig_path')
+            for antpath_b_et in antpath_b_list:
+                antpath_s += antpath_b_et.text + ' '
+            antpath_s = antpath_s[0:len(antpath_s) - 1]
+            antpath_restriction[1].append(antpath_s)
+    return antpath_restriction
 
 '''
 Python etree handle XML file
@@ -113,6 +132,8 @@ ws_Concurrency = wb.add_worksheet('Concurrency Restrictions')
 ws_Concurrency.freeze_panes(2, 0)
 ws_sigpath_sel = wb.add_worksheet('Signal Path Selection Table')
 ws_sigpath_sel.freeze_panes(2, 0)
+ws_antpath_restriction = wb.add_worksheet('Ant Switch Path Restrictions')
+ws_antpath_restriction.freeze_panes(2, 0)
 
 format1 = wb.add_format({'font_size': 10, 'font_name': 'Calibri', 'bold': 1, 'font_color': 'white',
                          'fg_color': 'green',
@@ -1286,6 +1307,60 @@ if isinstance(child_signalpathselection, ET.Element):
         sigpath_sel_col += 10
         ws_sigpath_sel.set_column(sigpath_sel_col, sigpath_sel_col, 3)
         sigpath_sel_col += 1
+
+#================ @ Ant Path Restriction Table ====================
+child_antpath_restriction = root.find("antenna_restriction_exception_list")
+ws_antpath_restriction.set_row(0, 25)
+antpath_restriction_sel_row = 0
+antpath_restriction_sel_col = 0
+antpath_res_group_line = ['Antenna Switch Path A', 'Antenna Switch Path B']
+
+if isinstance(child_antpath_restriction, ET.Element):
+    allow_disallow_et = child_antpath_restriction.find('allowed_list')
+    if isinstance(allow_disallow_et, ET.Element):
+        antpath_restriction = get_antpath_restriction_tbl(allow_disallow_et)
+        ws_antpath_restriction.merge_range(0, antpath_restriction_sel_col, 0, antpath_restriction_sel_col + 1,
+                                           'Antenna Switch Path Allowed List',
+                                           format1)
+        for tech_col in range(0, 2):
+            antpath_restriction_sel_row = 1
+            col_width = calc_col_width_by_str(antpath_res_group_line[tech_col])
+            ws_antpath_restriction.write(antpath_restriction_sel_row, tech_col + antpath_restriction_sel_col,
+                                         antpath_res_group_line[tech_col], format2)
+
+            antpath_restriction_sel_row += 1
+            for group_str in antpath_restriction[tech_col]:
+                ws_antpath_restriction.write(antpath_restriction_sel_row, tech_col + antpath_restriction_sel_col,
+                                             group_str, format3)
+                if calc_col_width_by_str(group_str) > col_width:
+                    col_width = calc_col_width_by_str(group_str)
+                antpath_restriction_sel_row += 1
+            ws_antpath_restriction.set_column(tech_col + antpath_restriction_sel_col,
+                                              tech_col + antpath_restriction_sel_col, col_width)
+        antpath_restriction_sel_col += 2
+        ws_antpath_restriction.set_column(antpath_restriction_sel_col, antpath_restriction_sel_col, 3)
+        antpath_restriction_sel_col += 1
+
+    allow_disallow_et = child_antpath_restriction.find('disallowed_list')
+    if isinstance(allow_disallow_et, ET.Element):
+        antpath_restriction = get_antpath_restriction_tbl(allow_disallow_et)
+        ws_antpath_restriction.merge_range(0, antpath_restriction_sel_col, 0, antpath_restriction_sel_col + 1, 'Antenna Switch Path Dis-allowed List',
+                                   format1)
+        for tech_col in range(0,2):
+            antpath_restriction_sel_row = 1
+            col_width = calc_col_width_by_str(antpath_res_group_line[tech_col])
+            ws_antpath_restriction.write(antpath_restriction_sel_row, tech_col+antpath_restriction_sel_col, antpath_res_group_line[tech_col], format2)
+
+            antpath_restriction_sel_row += 1
+            for group_str in antpath_restriction[tech_col]:
+                ws_antpath_restriction.write(antpath_restriction_sel_row, tech_col + antpath_restriction_sel_col, group_str, format3)
+                if calc_col_width_by_str(group_str) > col_width:
+                    col_width = calc_col_width_by_str(group_str)
+                antpath_restriction_sel_row += 1
+            ws_antpath_restriction.set_column(tech_col + antpath_restriction_sel_col, tech_col + antpath_restriction_sel_col, col_width)
+        antpath_restriction_sel_col += 2
+        ws_antpath_restriction.set_column(antpath_restriction_sel_col, antpath_restriction_sel_col, 3)
+        antpath_restriction_sel_col += 1
 
 
 

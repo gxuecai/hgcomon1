@@ -120,6 +120,7 @@ except:
 
 # initial excel table
 wb = XW.Workbook('RFC.xlsx')
+ws_cardvariants = wb.add_worksheet('Card Variants')
 ws_phydevice = wb.add_worksheet('Physical Devices')
 ws_phydevice.freeze_panes(0, 1)
 ws_signalpath = wb.add_worksheet('Signal Path')
@@ -173,6 +174,41 @@ print('root type', type(root))
 print('root tag','=========',root.tag,'=========')
 print('root length:', len(root))
 assert isinstance(root, ET.Element)
+
+#================ @ Card Variants ===================
+child_antpath = root.find("card_variants")
+if isinstance(child_antpath, ET.Element):
+    card_properties_et = child_antpath.find('card_properties')
+    name_s = ''
+    if isinstance(card_properties_et.find('name'), ET.Element):
+        name_s = card_properties_et.find('name').text
+    hwid_s = ''
+    if isinstance(card_properties_et.find('hwid'), ET.Element):
+        hwid_s = card_properties_et.find('hwid').text
+    swid_s = ''
+    if isinstance(card_properties_et.find('fsid'), ET.Element):
+        swid_s = card_properties_et.find('fsid').text
+    board_id_s = ''
+    if isinstance(card_properties_et.find('board_id'), ET.Element):
+        board_id_s = card_properties_et.find('board_id').text
+    protection_level_s = ''
+    if isinstance(card_properties_et.find('protection_level'), ET.Element):
+        protection_level_s = card_properties_et.find('protection_level').text
+    target_s = ''
+    target_list_et = card_properties_et.find('target_list')
+    if isinstance(target_list_et, ET.Element):
+        for target_et in target_list_et.findall('target'):
+            target_s += target_et.text + ','
+        target_s = target_s[0:len(target_s)-1]
+
+    Title_s = ['Name', 'HWID', 'SWID', 'Board ID', 'Targets', 'Protection Level']
+    values = [name_s, hwid_s, swid_s, board_id_s, target_s, protection_level_s]
+
+    for index_card in range(0, len(Title_s)):
+        ws_cardvariants.write(0, index_card, Title_s[index_card], format1)
+        ws_cardvariants.write(1, index_card, values[index_card], format3)
+        ws_cardvariants.set_column(index_card,index_card, max(calc_col_width_by_str(Title_s[index_card]) + 1, calc_col_width_by_str(values[index_card])))
+    ws_cardvariants.set_row(0,20)
 
 #================ @ get ant path ====================
 child_antpath = root.find("ant_switch_paths")

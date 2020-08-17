@@ -81,8 +81,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/rfc_converter.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-306">
-              <caret line="114" column="24" lean-forward="true" selection-start-line="114" selection-start-column="24" selection-end-line="114" selection-end-column="24" />
+            <state relative-caret-position="250">
+              <caret line="1539" column="57" lean-forward="true" selection-start-line="1539" selection-start-column="57" selection-end-line="1539" selection-end-column="57" />
               <folding>
                 <element signature="e#0#34#0" expanded="true" />
                 <element signature="e#6841#7047#0" />
@@ -350,7 +350,7 @@
       <workItem from="1591032777382" duration="2244000" />
       <workItem from="1591172445177" duration="104541000" />
       <workItem from="1593593795243" duration="101294000" />
-      <workItem from="1596959279022" duration="46037000" />
+      <workItem from="1596959279022" duration="59416000" />
     </task>
     <task id="LOCAL-00001" summary="init readme.xml">
       <created>1590845027742</created>
@@ -513,11 +513,25 @@
       <option name="project" value="LOCAL" />
       <updated>1597592769488</updated>
     </task>
-    <option name="localTasksCounter" value="24" />
+    <task id="LOCAL-00024" summary="Add Card variants page">
+      <created>1597632116834</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1597632116834</updated>
+    </task>
+    <task id="LOCAL-00025" summary="Add ant path selection table page">
+      <created>1597656589338</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1597656589338</updated>
+    </task>
+    <option name="localTasksCounter" value="26" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="283749000" />
+    <option name="totallyTimeSpent" value="297128000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -530,13 +544,14 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.07356077" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32936078" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49946696" weight="0.64788735" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.49946696" visible="true" weight="0.23185265" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.28602383" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -545,7 +560,7 @@
       <window_info anchor="bottom" id="Version Control" order="8" weight="0.29577464" />
       <window_info anchor="bottom" id="Database Changes" order="9" />
       <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.50053304" side_tool="true" weight="0.32936078" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="11" sideWeight="0.49946696" visible="true" weight="0.43878657" />
+      <window_info anchor="bottom" id="Terminal" order="11" sideWeight="0.49946696" weight="0.29469123" />
       <window_info anchor="bottom" id="Python Console" order="12" weight="0.32827735" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -630,7 +645,9 @@
     <MESSAGE value="concurrency restriction table finish" />
     <MESSAGE value="Add signal path selection table page" />
     <MESSAGE value="Add ant path restriction table page" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add ant path restriction table page" />
+    <MESSAGE value="Add Card variants page" />
+    <MESSAGE value="Add ant path selection table page" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add ant path selection table page" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -642,7 +659,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/rfc_converter.py</url>
-          <line>1404</line>
+          <line>1573</line>
           <option name="timeStamp" value="35" />
         </line-breakpoint>
       </breakpoints>
@@ -661,7 +678,7 @@
     <SUITE FILE_PATH="coverage/hgcomon1$xml_parser_rfc.coverage" NAME="xml_parser_rfc Coverage Results" MODIFIED="1591175469323" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/hgcomon1$searh_ca_combo_new.coverage" NAME="searh_ca_combo_new Coverage Results" MODIFIED="1591518352724" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/hgcomon1$ca_combo_class.coverage" NAME="ca_combo_class Coverage Results" MODIFIED="1591521087876" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/hgcomon1$rfc_converter.coverage" NAME="rfc_converter Coverage Results" MODIFIED="1597631231196" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/hgcomon1$rfc_converter.coverage" NAME="rfc_converter Coverage Results" MODIFIED="1597660704983" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/hgcomon1$excel_handler.coverage" NAME="excel_handler Coverage Results" MODIFIED="1591634615136" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/hgcomon1$subset.coverage" NAME="subset Coverage Results" MODIFIED="1591711668090" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
@@ -850,8 +867,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/rfc_converter.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-306">
-          <caret line="114" column="24" lean-forward="true" selection-start-line="114" selection-start-column="24" selection-end-line="114" selection-end-column="24" />
+        <state relative-caret-position="250">
+          <caret line="1539" column="57" lean-forward="true" selection-start-line="1539" selection-start-column="57" selection-end-line="1539" selection-end-column="57" />
           <folding>
             <element signature="e#0#34#0" expanded="true" />
             <element signature="e#6841#7047#0" />

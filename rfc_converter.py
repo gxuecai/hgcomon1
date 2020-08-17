@@ -148,14 +148,7 @@ ws_antpath = wb.add_worksheet('Ant Switch Path')
 ws_antpath.freeze_panes(1, 1)
 ws_fbrx = wb.add_worksheet('FBRX Path')
 ws_fbrx.freeze_panes(1, 1)
-ws_Concurrency = wb.add_worksheet('Concurrency Restrictions')
-ws_Concurrency.freeze_panes(2, 0)
-ws_sigpath_sel = wb.add_worksheet('Signal Path Selection Table')
-ws_sigpath_sel.freeze_panes(2, 0)
-ws_antpath_restriction = wb.add_worksheet('Ant Switch Path Restrictions')
-ws_antpath_restriction.freeze_panes(2, 0)
-ws_antpath_selection = wb.add_worksheet('Ant Switch Path Selection')
-ws_antpath_selection.freeze_panes(2, 0)
+
 
 format1 = wb.add_format({'font_size': 10, 'font_name': 'Calibri', 'bold': 1, 'font_color': 'white',
                          'fg_color': 'green',
@@ -1069,239 +1062,278 @@ for QLINK_device_col in QLINK_list:
         ws_phydevice.set_column(col_idx, col_idx, max(col_width_list))
     col_idx += 1
 
+#================ @ get Sub band info list ====================
+child_subband = root.find("rfc_sub_band_list")
+if isinstance(child_subband, ET.Element):
+    ws_subband = wb.add_worksheet('Sub Band Info List')
+    ws_subband.freeze_panes(1, 0)
+    title_line = ['Band ID', 'Split Type', 'Start Freq(KHz)', 'Stop Freq(KHz)']
+    freq_group_s = [[], [], [], []]
+    freq_list = child_subband.findall('frequency_range')
+    for freq_et in freq_list:
+        freq_group_s[0].append(freq_et.find('sub_band_id').text)
+        freq_group_s[1].append(freq_et.find('split_type').text)
+        freq_group_s[2].append(freq_et.find('start_freq_khz').text)
+        freq_group_s[3].append(freq_et.find('stop_freq_khz').text)
+
+    subband_row = 0
+    subband_col = 0
+    ws_subband.set_row(0, 25)
+    for subband_col in range(0, len(title_line)):
+        subband_row = 0
+        ws_subband.write(subband_row, subband_col, title_line[subband_col], format1)
+        col_width = calc_col_width_by_str(title_line[subband_col]) + 0.8
+        subband_row += 1
+        for freq_str in freq_group_s[subband_col]:
+            ws_subband.write(subband_row, subband_col, freq_str, format3)
+            if calc_col_width_by_str(freq_str) > col_width:
+                col_width = calc_col_width_by_str(freq_str)
+            subband_row += 1
+        ws_subband.set_column(subband_col,subband_col,col_width)
+
+
 #================ @ Concurrency Restriction ====================
 child_concurrency = root.find("concurrency_restriction_exception_list")
-et_allow_list = child_concurrency.find('allowed_list')
 
-allow_list_sigpath_a = []
-allow_list_sigpath_b = []
-ws_Concurrency.set_row(0, 25)
-row_allow_list = 0
-col_allow_list = 0
+if isinstance(child_concurrency, ET.Element):
 
-if isinstance(et_allow_list, ET.Element):
-    for group_et in et_allow_list:
-        sigpath_a_et = group_et.find('sig_path_a')
-        sigpath_a_str = ''
-        for sigpath_et in sigpath_a_et:
-            sigpath_a_str += (sigpath_et.text+' ')
-        sigpath_a_str = sigpath_a_str[0:len(sigpath_a_str) - 1]
-        allow_list_sigpath_a.append(sigpath_a_str)
+    et_allow_list = child_concurrency.find('allowed_list')
 
-        sigpath_a_et = group_et.find('sig_path_b')
-        sigpath_a_str = ''
-        for sigpath_et in sigpath_a_et:
-            sigpath_a_str += (sigpath_et.text + ' ')
-        sigpath_a_str = sigpath_a_str[0:len(sigpath_a_str) - 1]
-        allow_list_sigpath_b.append(sigpath_a_str)
-
-    col_width_allow_list_A = []
-    col_width_allow_list_B = []
-    ws_Concurrency.write(row_allow_list, col_allow_list, 'ALLOWED LIST', format1)
-    row_allow_list += 1
-    col_width_allow_list_A.append(calc_col_width_by_str('ALLOWED LIST') + 0.8)
-    ws_Concurrency.write(row_allow_list, col_allow_list, 'Sig Path A', format2)
-    row_allow_list += 1
-    col_width_allow_list_A.append(calc_col_width_by_str('Sig Path A') + 0.8)
-
-    for list_num in range(0, len(allow_list_sigpath_a)):
-        ws_Concurrency.write(row_allow_list, col_allow_list, allow_list_sigpath_a[list_num], format3)
-        row_allow_list += 1
-        col_width_allow_list_A.append(calc_col_width_by_str(allow_list_sigpath_a[list_num]) + 0.8)
-    ws_Concurrency.set_column(col_allow_list, col_allow_list,adjust_concurrency_number_str_col_width(max(col_width_allow_list_A)))
-    col_allow_list += 1
-
-    row_allow_list = 1
-    ws_Concurrency.write(row_allow_list, col_allow_list, 'Sig Path B', format2)
-    row_allow_list += 1
-    col_width_allow_list_B.append(calc_col_width_by_str('Sig Path B') + 0.8)
-
-    for list_num in range(0, len(allow_list_sigpath_b)):
-        ws_Concurrency.write(row_allow_list, col_allow_list, allow_list_sigpath_b[list_num], format3)
-        row_allow_list += 1
-        col_width_allow_list_B.append(calc_col_width_by_str(allow_list_sigpath_b[list_num]) + 0.8)
-
-    ws_Concurrency.set_column(col_allow_list, col_allow_list,adjust_concurrency_number_str_col_width(max(col_width_allow_list_B)))
-
-    col_allow_list += 1
-    ws_Concurrency.set_column(col_allow_list, col_allow_list,3)
-    col_allow_list += 1
-
-et_disallow_list = child_concurrency.find('disallowed_list')
-
-disallow_list_sigpath_a = []
-disallow_list_sigpath_b = []
-
-if isinstance(et_disallow_list, ET.Element):
-
-    for group_et in et_disallow_list:
-        sigpath_a_et = group_et.find('sig_path_a')
-        sigpath_a_str = ''
-        for sigpath_et in sigpath_a_et:
-            sigpath_a_str += (sigpath_et.text+' ')
-        sigpath_a_str = sigpath_a_str[0:len(sigpath_a_str) - 1]
-        disallow_list_sigpath_a.append(sigpath_a_str)
-
-        sigpath_a_et = group_et.find('sig_path_b')
-        sigpath_a_str = ''
-        for sigpath_et in sigpath_a_et:
-            sigpath_a_str += (sigpath_et.text + ' ')
-        sigpath_a_str = sigpath_a_str[0:len(sigpath_a_str) - 1]
-        disallow_list_sigpath_b.append(sigpath_a_str)
-
+    allow_list_sigpath_a = []
+    allow_list_sigpath_b = []
+    ws_Concurrency = wb.add_worksheet('Concurrency Restrictions')
+    ws_Concurrency.freeze_panes(2, 0)
+    ws_Concurrency.set_row(0, 25)
     row_allow_list = 0
-    col_width_disallow_list_A = []
-    col_width_disallow_list_B = []
-    ws_Concurrency.write(row_allow_list, col_allow_list, 'DISALLOWED LIST', format1)
-    row_allow_list += 1
-    col_width_disallow_list_A.append(calc_col_width_by_str('DISALLOWED LIST') + 0.8)
+    col_allow_list = 0
 
-    ws_Concurrency.write(row_allow_list, col_allow_list, 'Sig Path A', format2)
-    row_allow_list += 1
-    col_width_disallow_list_A.append(calc_col_width_by_str('Sig Path A') + 0.8)
+    if isinstance(et_allow_list, ET.Element):
+        for group_et in et_allow_list:
+            sigpath_a_et = group_et.find('sig_path_a')
+            sigpath_a_str = ''
+            for sigpath_et in sigpath_a_et:
+                sigpath_a_str += (sigpath_et.text+' ')
+            sigpath_a_str = sigpath_a_str[0:len(sigpath_a_str) - 1]
+            allow_list_sigpath_a.append(sigpath_a_str)
 
-    for list_num in range(0, len(disallow_list_sigpath_a)):
-        ws_Concurrency.write(row_allow_list, col_allow_list, disallow_list_sigpath_a[list_num], format3)
+            sigpath_a_et = group_et.find('sig_path_b')
+            sigpath_a_str = ''
+            for sigpath_et in sigpath_a_et:
+                sigpath_a_str += (sigpath_et.text + ' ')
+            sigpath_a_str = sigpath_a_str[0:len(sigpath_a_str) - 1]
+            allow_list_sigpath_b.append(sigpath_a_str)
+
+        col_width_allow_list_A = []
+        col_width_allow_list_B = []
+        ws_Concurrency.write(row_allow_list, col_allow_list, 'ALLOWED LIST', format1)
         row_allow_list += 1
-        col_width_disallow_list_A.append(calc_col_width_by_str(disallow_list_sigpath_a[list_num]) + 0.8)
-    ws_Concurrency.set_column(col_allow_list, col_allow_list,adjust_concurrency_number_str_col_width(max(col_width_disallow_list_A)))
-    col_allow_list += 1
-
-    row_allow_list = 1
-    ws_Concurrency.write(row_allow_list, col_allow_list, 'Sig Path B', format2)
-    row_allow_list += 1
-    col_width_disallow_list_B.append(calc_col_width_by_str('Sig Path B') + 0.8)
-
-    for list_num in range(0, len(disallow_list_sigpath_b)):
-        ws_Concurrency.write(row_allow_list, col_allow_list, disallow_list_sigpath_b[list_num], format3)
+        col_width_allow_list_A.append(calc_col_width_by_str('ALLOWED LIST') + 0.8)
+        ws_Concurrency.write(row_allow_list, col_allow_list, 'Sig Path A', format2)
         row_allow_list += 1
-        col_width_disallow_list_B.append(calc_col_width_by_str(disallow_list_sigpath_b[list_num]) + 0.8)
+        col_width_allow_list_A.append(calc_col_width_by_str('Sig Path A') + 0.8)
 
-    ws_Concurrency.set_column(col_allow_list, col_allow_list, adjust_concurrency_number_str_col_width(max(col_width_disallow_list_B)))
+        for list_num in range(0, len(allow_list_sigpath_a)):
+            ws_Concurrency.write(row_allow_list, col_allow_list, allow_list_sigpath_a[list_num], format3)
+            row_allow_list += 1
+            col_width_allow_list_A.append(calc_col_width_by_str(allow_list_sigpath_a[list_num]) + 0.8)
+        ws_Concurrency.set_column(col_allow_list, col_allow_list,adjust_concurrency_number_str_col_width(max(col_width_allow_list_A)))
+        col_allow_list += 1
 
-    col_allow_list += 1
-    ws_Concurrency.set_column(col_allow_list, col_allow_list, 3)
-    col_allow_list += 1
-
-et_msim_allow_list = child_concurrency.find('msim_allowed_list')
-
-mism_allow_list_sigpath_a = []
-mism_allow_list_sigpath_b = []
-
-if isinstance(et_msim_allow_list, ET.Element):
-    for group_et in et_msim_allow_list:
-        sigpath_a_et = group_et.find('sig_path_a')
-        sigpath_a_str = ''
-        for sigpath_et in sigpath_a_et:
-            sigpath_a_str += (sigpath_et.text+' ')
-        sigpath_a_str = sigpath_a_str[0:len(sigpath_a_str) - 1]
-        mism_allow_list_sigpath_a.append(sigpath_a_str)
-
-        sigpath_a_et = group_et.find('sig_path_b')
-        sigpath_a_str = ''
-        for sigpath_et in sigpath_a_et:
-            sigpath_a_str += (sigpath_et.text + ' ')
-        sigpath_a_str = sigpath_a_str[0:len(sigpath_a_str) - 1]
-        mism_allow_list_sigpath_b.append(sigpath_a_str)
-
-    row_allow_list = 0
-    col_width_msim_allow_list_A = []
-    col_width_msim_allow_list_B = []
-    ws_Concurrency.write(row_allow_list, col_allow_list, 'MSIM ALLOWED LIST', format1)
-    row_allow_list += 1
-    col_width_msim_allow_list_A.append(calc_col_width_by_str('MSIM ALLOWED LIST') + 0.8)
-
-    ws_Concurrency.write(row_allow_list, col_allow_list, 'Sig Path A', format2)
-    row_allow_list += 1
-    col_width_msim_allow_list_A.append(calc_col_width_by_str('Sig Path A') + 0.8)
-
-    for list_num in range(0, len(mism_allow_list_sigpath_a)):
-        ws_Concurrency.write(row_allow_list, col_allow_list, mism_allow_list_sigpath_a[list_num], format3)
+        row_allow_list = 1
+        ws_Concurrency.write(row_allow_list, col_allow_list, 'Sig Path B', format2)
         row_allow_list += 1
-        col_width_msim_allow_list_A.append(calc_col_width_by_str(mism_allow_list_sigpath_a[list_num]) + 0.8)
-    ws_Concurrency.set_column(col_allow_list, col_allow_list,adjust_concurrency_number_str_col_width(max(col_width_msim_allow_list_A)))
-    col_allow_list += 1
+        col_width_allow_list_B.append(calc_col_width_by_str('Sig Path B') + 0.8)
 
-    row_allow_list = 1
-    ws_Concurrency.write(row_allow_list, col_allow_list, 'Sig Path B', format2)
-    row_allow_list += 1
-    col_width_msim_allow_list_B.append(calc_col_width_by_str('Sig Path B') + 0.8)
+        for list_num in range(0, len(allow_list_sigpath_b)):
+            ws_Concurrency.write(row_allow_list, col_allow_list, allow_list_sigpath_b[list_num], format3)
+            row_allow_list += 1
+            col_width_allow_list_B.append(calc_col_width_by_str(allow_list_sigpath_b[list_num]) + 0.8)
 
-    for list_num in range(0, len(mism_allow_list_sigpath_b)):
-        ws_Concurrency.write(row_allow_list, col_allow_list, mism_allow_list_sigpath_b[list_num], format3)
+        ws_Concurrency.set_column(col_allow_list, col_allow_list,adjust_concurrency_number_str_col_width(max(col_width_allow_list_B)))
+
+        col_allow_list += 1
+        ws_Concurrency.set_column(col_allow_list, col_allow_list,3)
+        col_allow_list += 1
+
+    et_disallow_list = child_concurrency.find('disallowed_list')
+
+    disallow_list_sigpath_a = []
+    disallow_list_sigpath_b = []
+
+    if isinstance(et_disallow_list, ET.Element):
+
+        for group_et in et_disallow_list:
+            sigpath_a_et = group_et.find('sig_path_a')
+            sigpath_a_str = ''
+            for sigpath_et in sigpath_a_et:
+                sigpath_a_str += (sigpath_et.text+' ')
+            sigpath_a_str = sigpath_a_str[0:len(sigpath_a_str) - 1]
+            disallow_list_sigpath_a.append(sigpath_a_str)
+
+            sigpath_a_et = group_et.find('sig_path_b')
+            sigpath_a_str = ''
+            for sigpath_et in sigpath_a_et:
+                sigpath_a_str += (sigpath_et.text + ' ')
+            sigpath_a_str = sigpath_a_str[0:len(sigpath_a_str) - 1]
+            disallow_list_sigpath_b.append(sigpath_a_str)
+
+        row_allow_list = 0
+        col_width_disallow_list_A = []
+        col_width_disallow_list_B = []
+        ws_Concurrency.write(row_allow_list, col_allow_list, 'DISALLOWED LIST', format1)
         row_allow_list += 1
-        col_width_msim_allow_list_B.append(calc_col_width_by_str(mism_allow_list_sigpath_b[list_num]) + 0.8)
+        col_width_disallow_list_A.append(calc_col_width_by_str('DISALLOWED LIST') + 0.8)
 
-    ws_Concurrency.set_column(col_allow_list, col_allow_list,
-                              adjust_concurrency_number_str_col_width(max(col_width_msim_allow_list_B)))
-
-    col_allow_list += 1
-    ws_Concurrency.set_column(col_allow_list, col_allow_list, 3)
-    col_allow_list += 1
-
-et_msim_disallow_list = child_concurrency.find('msim_disallowed_list')
-
-mism_disallow_list_sigpath_a = []
-mism_disallow_list_sigpath_b = []
-
-if isinstance(et_msim_disallow_list, ET.Element):
-    for group_et in et_msim_disallow_list:
-        sigpath_a_et = group_et.find('sig_path_a')
-        sigpath_a_str = ''
-        for sigpath_et in sigpath_a_et:
-            sigpath_a_str += (sigpath_et.text+' ')
-        sigpath_a_str = sigpath_a_str[0:len(sigpath_a_str) - 1]
-        mism_disallow_list_sigpath_a.append(sigpath_a_str)
-
-        sigpath_a_et = group_et.find('sig_path_b')
-        sigpath_a_str = ''
-        for sigpath_et in sigpath_a_et:
-            sigpath_a_str += (sigpath_et.text + ' ')
-        sigpath_a_str = sigpath_a_str[0:len(sigpath_a_str) - 1]
-        mism_disallow_list_sigpath_b.append(sigpath_a_str)
-
-    row_allow_list = 0
-    col_width_msim_disallow_list_A = []
-    col_width_msim_disallow_list_B = []
-    ws_Concurrency.write(row_allow_list, col_allow_list, 'MSIM DISALLOWED LIST', format1)
-    row_allow_list += 1
-    col_width_msim_disallow_list_A.append(calc_col_width_by_str('MSIM DISALLOWED LIST') + 0.8)
-
-    ws_Concurrency.write(row_allow_list, col_allow_list, 'Sig Path A', format2)
-    row_allow_list += 1
-    col_width_msim_disallow_list_A.append(calc_col_width_by_str('Sig Path A') + 0.8)
-
-    for list_num in range(0, len(mism_disallow_list_sigpath_a)):
-        ws_Concurrency.write(row_allow_list, col_allow_list, mism_disallow_list_sigpath_a[list_num], format3)
+        ws_Concurrency.write(row_allow_list, col_allow_list, 'Sig Path A', format2)
         row_allow_list += 1
-        col_width_msim_disallow_list_A.append(calc_col_width_by_str(mism_disallow_list_sigpath_a[list_num]) + 0.8)
-    ws_Concurrency.set_column(col_allow_list, col_allow_list,adjust_concurrency_number_str_col_width(max(col_width_msim_disallow_list_A)))
-    col_allow_list += 1
+        col_width_disallow_list_A.append(calc_col_width_by_str('Sig Path A') + 0.8)
 
-    row_allow_list = 1
-    ws_Concurrency.write(row_allow_list, col_allow_list, 'Sig Path B', format2)
-    row_allow_list += 1
-    col_width_msim_disallow_list_B.append(calc_col_width_by_str('Sig Path B') + 0.8)
+        for list_num in range(0, len(disallow_list_sigpath_a)):
+            ws_Concurrency.write(row_allow_list, col_allow_list, disallow_list_sigpath_a[list_num], format3)
+            row_allow_list += 1
+            col_width_disallow_list_A.append(calc_col_width_by_str(disallow_list_sigpath_a[list_num]) + 0.8)
+        ws_Concurrency.set_column(col_allow_list, col_allow_list,adjust_concurrency_number_str_col_width(max(col_width_disallow_list_A)))
+        col_allow_list += 1
 
-    for list_num in range(0, len(mism_disallow_list_sigpath_b)):
-        ws_Concurrency.write(row_allow_list, col_allow_list, mism_disallow_list_sigpath_b[list_num], format3)
+        row_allow_list = 1
+        ws_Concurrency.write(row_allow_list, col_allow_list, 'Sig Path B', format2)
         row_allow_list += 1
-        col_width_msim_disallow_list_B.append(calc_col_width_by_str(mism_disallow_list_sigpath_b[list_num]) + 0.8)
+        col_width_disallow_list_B.append(calc_col_width_by_str('Sig Path B') + 0.8)
 
-    ws_Concurrency.set_column(col_allow_list, col_allow_list,
-                              adjust_concurrency_number_str_col_width(max(col_width_msim_disallow_list_B)))
+        for list_num in range(0, len(disallow_list_sigpath_b)):
+            ws_Concurrency.write(row_allow_list, col_allow_list, disallow_list_sigpath_b[list_num], format3)
+            row_allow_list += 1
+            col_width_disallow_list_B.append(calc_col_width_by_str(disallow_list_sigpath_b[list_num]) + 0.8)
 
-    col_allow_list += 1
-    ws_Concurrency.set_column(col_allow_list, col_allow_list, 3)
-    col_allow_list += 1
+        ws_Concurrency.set_column(col_allow_list, col_allow_list, adjust_concurrency_number_str_col_width(max(col_width_disallow_list_B)))
+
+        col_allow_list += 1
+        ws_Concurrency.set_column(col_allow_list, col_allow_list, 3)
+        col_allow_list += 1
+
+    et_msim_allow_list = child_concurrency.find('msim_allowed_list')
+
+    mism_allow_list_sigpath_a = []
+    mism_allow_list_sigpath_b = []
+
+    if isinstance(et_msim_allow_list, ET.Element):
+        for group_et in et_msim_allow_list:
+            sigpath_a_et = group_et.find('sig_path_a')
+            sigpath_a_str = ''
+            for sigpath_et in sigpath_a_et:
+                sigpath_a_str += (sigpath_et.text+' ')
+            sigpath_a_str = sigpath_a_str[0:len(sigpath_a_str) - 1]
+            mism_allow_list_sigpath_a.append(sigpath_a_str)
+
+            sigpath_a_et = group_et.find('sig_path_b')
+            sigpath_a_str = ''
+            for sigpath_et in sigpath_a_et:
+                sigpath_a_str += (sigpath_et.text + ' ')
+            sigpath_a_str = sigpath_a_str[0:len(sigpath_a_str) - 1]
+            mism_allow_list_sigpath_b.append(sigpath_a_str)
+
+        row_allow_list = 0
+        col_width_msim_allow_list_A = []
+        col_width_msim_allow_list_B = []
+        ws_Concurrency.write(row_allow_list, col_allow_list, 'MSIM ALLOWED LIST', format1)
+        row_allow_list += 1
+        col_width_msim_allow_list_A.append(calc_col_width_by_str('MSIM ALLOWED LIST') + 0.8)
+
+        ws_Concurrency.write(row_allow_list, col_allow_list, 'Sig Path A', format2)
+        row_allow_list += 1
+        col_width_msim_allow_list_A.append(calc_col_width_by_str('Sig Path A') + 0.8)
+
+        for list_num in range(0, len(mism_allow_list_sigpath_a)):
+            ws_Concurrency.write(row_allow_list, col_allow_list, mism_allow_list_sigpath_a[list_num], format3)
+            row_allow_list += 1
+            col_width_msim_allow_list_A.append(calc_col_width_by_str(mism_allow_list_sigpath_a[list_num]) + 0.8)
+        ws_Concurrency.set_column(col_allow_list, col_allow_list,adjust_concurrency_number_str_col_width(max(col_width_msim_allow_list_A)))
+        col_allow_list += 1
+
+        row_allow_list = 1
+        ws_Concurrency.write(row_allow_list, col_allow_list, 'Sig Path B', format2)
+        row_allow_list += 1
+        col_width_msim_allow_list_B.append(calc_col_width_by_str('Sig Path B') + 0.8)
+
+        for list_num in range(0, len(mism_allow_list_sigpath_b)):
+            ws_Concurrency.write(row_allow_list, col_allow_list, mism_allow_list_sigpath_b[list_num], format3)
+            row_allow_list += 1
+            col_width_msim_allow_list_B.append(calc_col_width_by_str(mism_allow_list_sigpath_b[list_num]) + 0.8)
+
+        ws_Concurrency.set_column(col_allow_list, col_allow_list,
+                                  adjust_concurrency_number_str_col_width(max(col_width_msim_allow_list_B)))
+
+        col_allow_list += 1
+        ws_Concurrency.set_column(col_allow_list, col_allow_list, 3)
+        col_allow_list += 1
+
+    et_msim_disallow_list = child_concurrency.find('msim_disallowed_list')
+
+    mism_disallow_list_sigpath_a = []
+    mism_disallow_list_sigpath_b = []
+
+    if isinstance(et_msim_disallow_list, ET.Element):
+        for group_et in et_msim_disallow_list:
+            sigpath_a_et = group_et.find('sig_path_a')
+            sigpath_a_str = ''
+            for sigpath_et in sigpath_a_et:
+                sigpath_a_str += (sigpath_et.text+' ')
+            sigpath_a_str = sigpath_a_str[0:len(sigpath_a_str) - 1]
+            mism_disallow_list_sigpath_a.append(sigpath_a_str)
+
+            sigpath_a_et = group_et.find('sig_path_b')
+            sigpath_a_str = ''
+            for sigpath_et in sigpath_a_et:
+                sigpath_a_str += (sigpath_et.text + ' ')
+            sigpath_a_str = sigpath_a_str[0:len(sigpath_a_str) - 1]
+            mism_disallow_list_sigpath_b.append(sigpath_a_str)
+
+        row_allow_list = 0
+        col_width_msim_disallow_list_A = []
+        col_width_msim_disallow_list_B = []
+        ws_Concurrency.write(row_allow_list, col_allow_list, 'MSIM DISALLOWED LIST', format1)
+        row_allow_list += 1
+        col_width_msim_disallow_list_A.append(calc_col_width_by_str('MSIM DISALLOWED LIST') + 0.8)
+
+        ws_Concurrency.write(row_allow_list, col_allow_list, 'Sig Path A', format2)
+        row_allow_list += 1
+        col_width_msim_disallow_list_A.append(calc_col_width_by_str('Sig Path A') + 0.8)
+
+        for list_num in range(0, len(mism_disallow_list_sigpath_a)):
+            ws_Concurrency.write(row_allow_list, col_allow_list, mism_disallow_list_sigpath_a[list_num], format3)
+            row_allow_list += 1
+            col_width_msim_disallow_list_A.append(calc_col_width_by_str(mism_disallow_list_sigpath_a[list_num]) + 0.8)
+        ws_Concurrency.set_column(col_allow_list, col_allow_list,adjust_concurrency_number_str_col_width(max(col_width_msim_disallow_list_A)))
+        col_allow_list += 1
+
+        row_allow_list = 1
+        ws_Concurrency.write(row_allow_list, col_allow_list, 'Sig Path B', format2)
+        row_allow_list += 1
+        col_width_msim_disallow_list_B.append(calc_col_width_by_str('Sig Path B') + 0.8)
+
+        for list_num in range(0, len(mism_disallow_list_sigpath_b)):
+            ws_Concurrency.write(row_allow_list, col_allow_list, mism_disallow_list_sigpath_b[list_num], format3)
+            row_allow_list += 1
+            col_width_msim_disallow_list_B.append(calc_col_width_by_str(mism_disallow_list_sigpath_b[list_num]) + 0.8)
+
+        ws_Concurrency.set_column(col_allow_list, col_allow_list,
+                                  adjust_concurrency_number_str_col_width(max(col_width_msim_disallow_list_B)))
+
+        col_allow_list += 1
+        ws_Concurrency.set_column(col_allow_list, col_allow_list, 3)
+        col_allow_list += 1
 
 #================ @ Signal Path Selection Table ====================
 child_signalpathselection = root.find("signal_path_selection_list_v2")
 sigpath_sel_row = 0
 sigpath_sel_col = 0
-ws_sigpath_sel.set_row(0, 25)
-sigpath_group_line = ['TX Group 0', 'TX Group 1', 'RX Group 0', 'RX Group 1', 'RX Group 2', 'RX Group 3', 'RX Group 4', 'RX Group 5', 'RX Group 6', 'RX Group 7']
+
 if isinstance(child_signalpathselection, ET.Element):
+    ws_sigpath_sel = wb.add_worksheet('Signal Path Selection Table')
+    ws_sigpath_sel.freeze_panes(2, 0)
+    ws_sigpath_sel.set_row(0, 25)
+    sigpath_group_line = ['TX Group 0', 'TX Group 1', 'RX Group 0', 'RX Group 1', 'RX Group 2', 'RX Group 3',
+                          'RX Group 4', 'RX Group 5', 'RX Group 6', 'RX Group 7']
 
     tech_sel_et = child_signalpathselection.find('sig_path_sel_lte_group')
     if isinstance(tech_sel_et, ET.Element):
@@ -1367,12 +1399,15 @@ if isinstance(child_signalpathselection, ET.Element):
 
 #================ @ Ant Path Restriction Table ====================
 child_antpath_restriction = root.find("antenna_restriction_exception_list")
-ws_antpath_restriction.set_row(0, 25)
-antpath_restriction_sel_row = 0
-antpath_restriction_sel_col = 0
-antpath_res_group_line = ['Antenna Switch Path A', 'Antenna Switch Path B']
 
 if isinstance(child_antpath_restriction, ET.Element):
+    ws_antpath_restriction = wb.add_worksheet('Ant Switch Path Restrictions')
+    ws_antpath_restriction.freeze_panes(2, 0)
+    ws_antpath_restriction.set_row(0, 25)
+    antpath_restriction_sel_row = 0
+    antpath_restriction_sel_col = 0
+    antpath_res_group_line = ['Antenna Switch Path A', 'Antenna Switch Path B']
+
     allow_disallow_et = child_antpath_restriction.find('allowed_list')
     if isinstance(allow_disallow_et, ET.Element):
         antpath_restriction = get_antpath_restriction_tbl(allow_disallow_et)
@@ -1422,11 +1457,15 @@ if isinstance(child_antpath_restriction, ET.Element):
 #================ @ Get Ant Path selsction Table ====================
 child_band_class = root.find("band_classification_list")
 
-ws_antpath_selection.set_row(0,25)
 antpath_select_sel_row = 0
 antpath_select_sel_col = 0
-
+is_antpath_sel_page_created = 0
 if isinstance(child_band_class, ET.Element):
+    ws_antpath_selection = wb.add_worksheet('Ant Switch Path Selection')
+    ws_antpath_selection.freeze_panes(2, 0)
+    ws_antpath_selection.set_row(0, 25)
+    is_antpath_sel_page_created = 1
+
     band_class_group = [[], []]
     band_class_list = child_band_class.findall('band_class')
     for band_class_et in band_class_list:
@@ -1465,6 +1504,11 @@ if isinstance(child_band_class, ET.Element):
 child_antpath_sel = root.find("ant_path_selection_list")
 
 if isinstance(child_antpath_sel, ET.Element):
+    if is_antpath_sel_page_created == 0:
+        ws_antpath_selection = wb.add_worksheet('Ant Switch Path Selection')
+        ws_antpath_selection.freeze_panes(2, 0)
+        ws_antpath_selection.set_row(0, 25)
+
     antpath_sel_group_list = child_antpath_sel.findall('group')
     antpath_sel_group_s = [[], [],
                            [], [], [], [], [], [], [], [],
@@ -1499,7 +1543,8 @@ if isinstance(child_antpath_sel, ET.Element):
     ws_antpath_selection.merge_range(0, antpath_select_sel_col, 0, antpath_select_sel_col + 9,
                                      'Antenna Selection Group Table',
                                      format1)
-    ws_antpath_selection.merge_range(2, antpath_select_sel_col, antpath_select_sel_row - 1, antpath_select_sel_col + 10, ' ', format2)
+    if antpath_select_sel_row > 3:
+        ws_antpath_selection.merge_range(2, antpath_select_sel_col, antpath_select_sel_row - 1, antpath_select_sel_col + 10, ' ', format2)
     antpath_sel_title_line = ['TX(PCC)', 'TX(SCC 1)',
                              'RX(PCC)', 'RX(SCC 1)', 'RX(SCC 2)', 'RX(SCC 3)', 'RX(SCC 4)', 'RX(SCC 5)', 'RX(SCC 6)', 'RX(SCC 7)',
                              'Comments']

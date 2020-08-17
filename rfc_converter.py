@@ -95,6 +95,24 @@ def get_antpath_restriction_tbl(allow_disallow_et):
             antpath_restriction[1].append(antpath_s)
     return antpath_restriction
 
+def get_antpath_sel_id_str(trx_group_et, tx_rx_s):
+
+    ant_group_str = ''
+    id_list = trx_group_et.findall(tx_rx_s)
+    ant_group_str += 'BGN: ' + id_list[0].find('bandclass_id').text + ' \n'
+    for id_et in id_list:
+        ant_group_str += 'ID: ' + id_et.attrib['id'] + ' '
+        ant_group_str += 'SPG: ' + id_et.find('sig_path_group_id').text + ' ' + 'ASP: '
+        ASP_list = id_et.find('override_antswitch_path').findall('ant_switching_config')
+        ASP_str = ''
+        for ASP_et in ASP_list:
+            ASP_str += ASP_et.find('ant_path').text + ' '
+        ASP_str = ASP_str[0:len(ASP_str) - 1]
+        ant_group_str += ASP_str + '\n'
+    ant_group_str = ant_group_str[0:len(ant_group_str) - 1]
+
+    return ant_group_str
+
 '''
 Python etree handle XML file
 '''
@@ -136,6 +154,8 @@ ws_sigpath_sel = wb.add_worksheet('Signal Path Selection Table')
 ws_sigpath_sel.freeze_panes(2, 0)
 ws_antpath_restriction = wb.add_worksheet('Ant Switch Path Restrictions')
 ws_antpath_restriction.freeze_panes(2, 0)
+ws_antpath_selection = wb.add_worksheet('Ant Switch Path Selection')
+ws_antpath_selection.freeze_panes(2, 0)
 
 format1 = wb.add_format({'font_size': 10, 'font_name': 'Calibri', 'bold': 1, 'font_color': 'white',
                          'fg_color': 'green',
@@ -1398,6 +1418,110 @@ if isinstance(child_antpath_restriction, ET.Element):
         antpath_restriction_sel_col += 2
         ws_antpath_restriction.set_column(antpath_restriction_sel_col, antpath_restriction_sel_col, 3)
         antpath_restriction_sel_col += 1
+
+#================ @ Get Ant Path selsction Table ====================
+child_band_class = root.find("band_classification_list")
+
+ws_antpath_selection.set_row(0,25)
+antpath_select_sel_row = 0
+antpath_select_sel_col = 0
+
+if isinstance(child_band_class, ET.Element):
+    band_class_group = [[], []]
+    band_class_list = child_band_class.findall('band_class')
+    for band_class_et in band_class_list:
+        band_class_group[0].append(band_class_et.attrib['bandclass_name'])
+        band_config_list = band_class_et.findall('band_config')
+        band_config_s = ''
+        for band_config_et in band_config_list:
+            band_config_s += band_config_et.find('band').text + ' '
+        band_config_s = band_config_s[0:len(band_config_s)-1]
+        band_class_group[1].append(band_config_s)
+
+    ws_antpath_selection.merge_range(0, antpath_select_sel_col, 0, antpath_select_sel_col + 1,
+                                       'Band Classification Table',
+                                       format1)
+    band_class_title_line = ['Band Group Name', 'Band List']
+
+    for tech_col in range(0, 2):
+        antpath_select_sel_row = 1
+        col_width = calc_col_width_by_str(band_class_title_line[tech_col])
+        ws_antpath_selection.write(antpath_select_sel_row, tech_col + antpath_select_sel_col,
+                                     band_class_title_line[tech_col], format2)
+
+        antpath_select_sel_row += 1
+        for group_str in band_class_group[tech_col]:
+            ws_antpath_selection.write(antpath_select_sel_row, tech_col + antpath_select_sel_col,
+                                         group_str, format3)
+            if calc_col_width_by_str(group_str) > col_width:
+                col_width = calc_col_width_by_str(group_str)
+            antpath_select_sel_row += 1
+        ws_antpath_selection.set_column(tech_col + antpath_select_sel_col,
+                                          tech_col + antpath_select_sel_col, col_width)
+    antpath_select_sel_col += 2
+    ws_antpath_selection.set_column(antpath_select_sel_col, antpath_select_sel_col, 3)
+    antpath_select_sel_col += 1
+
+child_antpath_sel = root.find("ant_path_selection_list")
+
+if isinstance(child_antpath_sel, ET.Element):
+    antpath_sel_group_list = child_antpath_sel.findall('group')
+    antpath_sel_group_s = [[], [],
+                           [], [], [], [], [], [], [], [],
+                           []]
+    for antpath_sel_group_et in antpath_sel_group_list:
+        tx_group_list = antpath_sel_group_et.findall('tx_operation')
+        group_index = 0
+        for tx_group_et in tx_group_list:
+            ant_group_str = get_antpath_sel_id_str(tx_group_et, 'tx')
+            antpath_sel_group_s[group_index].append(ant_group_str)
+            group_index += 1
+
+        for tx_num in range(group_index, 2):
+            antpath_sel_group_s[tx_num].append('')
+
+        rx_group_list = antpath_sel_group_et.findall('rx_operation')
+        group_index = 2
+        for rx_group_et in rx_group_list:
+            ant_group_str = get_antpath_sel_id_str(rx_group_et, 'rx')
+            antpath_sel_group_s[group_index].append(ant_group_str)
+            group_index += 1
+
+        for rx_num in range(group_index, 10):
+            antpath_sel_group_s[rx_num].append('')
+
+        if isinstance(antpath_sel_group_et.find('comments'), ET.Element):
+            antpath_sel_group_s[10].append(antpath_sel_group_et.find('comments').text) # comment
+        else:
+            antpath_sel_group_s[10].append('')  # comment
+
+    antpath_select_sel_row_bandclass = antpath_select_sel_row
+    ws_antpath_selection.merge_range(0, antpath_select_sel_col, 0, antpath_select_sel_col + 9,
+                                     'Antenna Selection Group Table',
+                                     format1)
+    ws_antpath_selection.merge_range(2, antpath_select_sel_col, antpath_select_sel_row - 1, antpath_select_sel_col + 10, ' ', format2)
+    antpath_sel_title_line = ['TX(PCC)', 'TX(SCC 1)',
+                             'RX(PCC)', 'RX(SCC 1)', 'RX(SCC 2)', 'RX(SCC 3)', 'RX(SCC 4)', 'RX(SCC 5)', 'RX(SCC 6)', 'RX(SCC 7)',
+                             'Comments']
+    for tech_col in range(0, 11):
+        antpath_select_sel_row = antpath_select_sel_row_bandclass
+        col_width = calc_col_width_by_str(antpath_sel_title_line[tech_col])
+        ws_antpath_selection.write(1, tech_col + antpath_select_sel_col,
+                                     antpath_sel_title_line[tech_col], format2) # 总是在第二行写入
+        # antpath_select_sel_row += 1
+        for group_str in antpath_sel_group_s[tech_col]:
+            ws_antpath_selection.write(antpath_select_sel_row, tech_col + antpath_select_sel_col,
+                                       group_str, format3)
+            if calc_col_width_by_str(group_str) > col_width:
+                col_width = calc_col_width_by_str(group_str)
+            antpath_select_sel_row += 1
+        ws_antpath_selection.set_column(tech_col + antpath_select_sel_col,
+                                        tech_col + antpath_select_sel_col, col_width)
+
+    antpath_select_sel_col += 11
+    ws_antpath_selection.set_column(antpath_select_sel_col, antpath_select_sel_col, 3)
+    antpath_select_sel_col += 1
+
 
 
 

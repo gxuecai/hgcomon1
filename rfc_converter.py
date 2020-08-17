@@ -121,6 +121,7 @@ except:
 # initial excel table
 wb = XW.Workbook('RFC.xlsx')
 ws_cardvariants = wb.add_worksheet('Card Variants')
+ws_cardvariants.freeze_panes(2, 0)
 ws_phydevice = wb.add_worksheet('Physical Devices')
 ws_phydevice.freeze_panes(0, 1)
 ws_signalpath = wb.add_worksheet('Signal Path')

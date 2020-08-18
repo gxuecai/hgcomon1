@@ -1091,6 +1091,83 @@ if isinstance(child_subband, ET.Element):
             subband_row += 1
         ws_subband.set_column(subband_col,subband_col,col_width)
 
+#================ @ get GPIO list ====================
+child_gpiolist = root.find("gpio_list_v2")
+
+if isinstance(child_gpiolist, ET.Element):
+    ws_gpiolist = wb.add_worksheet('SDM GPIO-RFFE Signals')
+    ws_gpiolist.freeze_panes(2, 0)
+    ws_gpiolist.set_row(0,25)
+    ws_gpiolist_row = 0
+    ws_gpiolist_col = 0
+
+    rffe_signals_et = child_gpiolist.find('rffe_signals')
+    if isinstance(rffe_signals_et, ET.Element):
+        rffe_signal_headline = ['Num', 'Speed', 'Clock', 'PULL', 'Strength or Load', 'Data', 'PULL', 'Strength or Load']
+        rffe_signal_group_s = [[], [], [], [], [], [], [], []]
+        rffe_signal_list = rffe_signals_et.findall('rffe_signal')
+        for rffe_et in rffe_signal_list:
+            rffe_signal_group_s[0].append(rffe_et.attrib['num'])
+            rffe_signal_group_s[1].append(rffe_et.find('speed').text)
+            gpio_list = rffe_et.findall('gpio')
+            rffe_signal_group_s[2].append(gpio_list[0].attrib['name'])
+            rffe_signal_group_s[3].append(gpio_list[0].find('gpio_pull').text)
+            rffe_signal_group_s[4].append(gpio_list[0].find('drv_strength').text)
+            rffe_signal_group_s[5].append(gpio_list[1].attrib['name'])
+            rffe_signal_group_s[6].append(gpio_list[1].find('gpio_pull').text)
+            rffe_signal_group_s[7].append(gpio_list[1].find('drv_strength').text)
+        ws_gpiolist.merge_range(0, ws_gpiolist_col, 0, ws_gpiolist_col + 7,
+                                         'SDM/SDX Driven RFFE Signals(V2)',
+                                         format1)
+        for tech_col in range(0,8):
+            ws_gpiolist_row = 1
+            ws_gpiolist.write(ws_gpiolist_row, tech_col + ws_gpiolist_col, rffe_signal_headline[tech_col], format2)
+            ws_gpiolist_row += 1
+            col_width = calc_col_width_by_str(rffe_signal_headline[tech_col]) + 0.8
+            for rffe_str in rffe_signal_group_s[tech_col]:
+                ws_gpiolist.write(ws_gpiolist_row, tech_col + ws_gpiolist_col, rffe_str, format3)
+                if (calc_col_width_by_str(rffe_str) + 0.8) > col_width:
+                    col_width = (calc_col_width_by_str(rffe_str) + 0.8)
+                ws_gpiolist_row += 1
+            ws_gpiolist.set_column(tech_col + ws_gpiolist_col, tech_col + ws_gpiolist_col, col_width)
+
+        ws_gpiolist_col += 8
+        ws_gpiolist.set_column(ws_gpiolist_col, ws_gpiolist_col, 3)
+        ws_gpiolist_col += 1
+
+
+
+    other_signals_et = child_gpiolist.find('other_signals')
+    if isinstance(other_signals_et, ET.Element):
+        other_signals_headline = ['Name', 'PULL', 'Strength']
+        other_signals_groups_s = [[], [] ,[]]
+        gpio_list = other_signals_et.findall('gpio')
+        for gpio_et in gpio_list:
+            other_signals_groups_s[0].append(gpio_et.attrib['name'])
+            if isinstance(gpio_et.find('gpio_pull'), ET.Element):
+                other_signals_groups_s[1].append(gpio_et.find('gpio_pull').text)
+            else:
+                other_signals_groups_s[1].append('')
+
+            if isinstance(gpio_et.find('drv_strength'), ET.Element):
+                other_signals_groups_s[2].append(gpio_et.find('drv_strength').text)
+            else:
+                other_signals_groups_s[2].append('')
+        ws_gpiolist.merge_range(0, ws_gpiolist_col, 0, ws_gpiolist_col + 2,
+                                'Other Signals Group',
+                                format1)
+        for tech_col in range(0,3):
+            ws_gpiolist_row = 1
+            ws_gpiolist.write(ws_gpiolist_row, tech_col + ws_gpiolist_col, other_signals_headline[tech_col], format2)
+            ws_gpiolist_row += 1
+            col_width = calc_col_width_by_str(other_signals_headline[tech_col]) + 0.8
+            for rffe_str in other_signals_groups_s[tech_col]:
+                ws_gpiolist.write(ws_gpiolist_row, tech_col + ws_gpiolist_col, rffe_str, format3)
+                if 0.8 + calc_col_width_by_str(rffe_str) > col_width:
+                    col_width = calc_col_width_by_str(rffe_str) + 0.8
+                ws_gpiolist_row += 1
+            ws_gpiolist.set_column(tech_col + ws_gpiolist_col, tech_col + ws_gpiolist_col, col_width)
+
 
 #================ @ Concurrency Restriction ====================
 child_concurrency = root.find("concurrency_restriction_exception_list")

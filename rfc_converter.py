@@ -2,6 +2,7 @@ import xml.etree.ElementTree as ET
 import xlsxwriter as XW
 import types
 import re
+import os
 
 
 def calc_col_width_by_str(write_str):
@@ -125,19 +126,35 @@ def print_tree_element_info(element, namestring):
     print('%s length:' % namestring, len(element))
 # -------------------------------------------------------------------------
 
-rfc_path = input("Input RFC XML: ")
+while 1:
 
-# file element tree and get root node
-tree= ET.ElementTree()
-try:
-    tree.parse(rfc_path)
-    print(rfc_path)
-except:
-    print('Use default RFC path')
-    tree.parse(r'C:\CODE\MPSS.HI.1.0.c8-00198\modem_proc\rf\rfc_himalaya\common\etc\rf_card\rfc_Global_SDRV300_BoardID2_ag.xml')
+    rfc_path = input("Input RFC XML: ")
+
+    # file element tree and get root node
+    tree= ET.ElementTree()
+    try:
+        tree.parse(rfc_path)
+        print(rfc_path)
+        print(os.getcwd())
+        path_list = re.split(r'\\', rfc_path)
+        run_path = ''
+        for path_str in path_list[0:len(path_list)-1]:
+            run_path += (path_str + '\\')
+        xml_filename_str = path_list[-1]
+        xlsx_name_create = xml_filename_str[0:len(xml_filename_str)-4] + '.xlsx'
+        os.chdir(run_path)
+        print(os.getcwd())
+        break
+    except:
+        print('Invalid XML file or path, please enter valid XML file')
+        '''
+        print('Use default RFC path')
+        tree.parse(r'C:\CODE\MPSS.HI.1.0.c8-00198\modem_proc\rf\rfc_himalaya\common\etc\rf_card\rfc_Global_SDRV300_BoardID2_ag.xml')
+        xlsx_name_create = 'rfc_Global_SDRV300_BoardID2_ag.xlsx'
+        '''
 
 # initial excel table
-wb = XW.Workbook('RFC.xlsx')
+wb = XW.Workbook(xlsx_name_create)
 ws_cardvariants = wb.add_worksheet('Card Variants')
 ws_cardvariants.freeze_panes(2, 0)
 ws_phydevice = wb.add_worksheet('Physical Devices')

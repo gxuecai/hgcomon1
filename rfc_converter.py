@@ -1760,8 +1760,53 @@ if isinstance(child_antpath_sel, ET.Element):
     ws_antpath_selection.set_column(antpath_select_sel_col, antpath_select_sel_col, 3)
     antpath_select_sel_col += 1
 
+#================ @ Get Card Property ====================
+child_cardpro = root.find("rfc_common_properties")
 
+if isinstance(child_cardpro, ET.Element):
+    ws_cardpro = wb.add_worksheet('Card Properties')
+    ws_cardpro.freeze_panes(2, 0)
+    ws_cardpro.set_row(0, 25)
+    ws_cardpro_row = 0
+    ws_cardpro_col = 0
+    feature_et = child_cardpro.find('concurrency_features')
+    if isinstance(feature_et, ET.Element):
+        feature_s = ['feature']
+        feature_list = feature_et.findall('feature')
+        for feature_i in feature_list:
+            feature_s.append(feature_i.text)
+        feature_len = [len(str_feature) for str_feature in feature_s]
+        ws_cardpro.write(ws_cardpro_row, ws_cardpro_col, 'FEATURES', format1)
+        ws_cardpro_row += 1
+        ws_cardpro.write(ws_cardpro_row, ws_cardpro_col, 'feature', format2)
+        ws_cardpro_row += 1
+        for str_feature in feature_s[1:len(feature_s)]:
+            ws_cardpro.write(ws_cardpro_row, ws_cardpro_col, str_feature, format3)
+            ws_cardpro_row += 1
+        ws_cardpro.set_column(ws_cardpro_col, ws_cardpro_col, max(feature_len)+1)
+        ws_cardpro_col += 1
+        ws_cardpro.set_column(ws_cardpro_col, ws_cardpro_col, 3)
+        ws_cardpro_col += 1
 
+    lte_srs_grouping = child_cardpro.find('lte_srs_grouping')
+    if isinstance(lte_srs_grouping, ET.Element):
+        srs_group_s = [['Group1'], ['Group2']]
+        srs_group_len = [[], []]
+        srs_group_list = lte_srs_grouping.findall('srs_grouping')
+        for srs_group_et in srs_group_list:
+            srs_group_s[0].append(srs_group_et.find('group1').text)
+            srs_group_s[1].append(srs_group_et.find('group2').text)
+        ws_cardpro.merge_range(0, ws_cardpro_col, 0, ws_cardpro_col + 1, 'LTE SRS GROUP', format1)
+        ws_cardpro_row = 1
+        srs_group_len[0] = [len(str) for str in srs_group_s[0]]
+        srs_group_len[1] = [len(str) for str in srs_group_s[1]]
+        for tech_col in range(0, 2):
+            ws_cardpro.write(1, tech_col+ws_cardpro_col, srs_group_s[tech_col][0], format2)
+            ws_cardpro_row = 2
+            for str in srs_group_s[tech_col][1:len(srs_group_s[tech_col])]:
+                ws_cardpro.write(ws_cardpro_row, tech_col + ws_cardpro_col, str, format3)
+                ws_cardpro_row += 1
+            ws_cardpro.set_column(tech_col + ws_cardpro_col, tech_col + ws_cardpro_col, max(srs_group_len[tech_col]) + 1)
 
 
 wb.close() # save to xlsx file

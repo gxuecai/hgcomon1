@@ -1168,6 +1168,114 @@ if isinstance(child_gpiolist, ET.Element):
                 ws_gpiolist_row += 1
             ws_gpiolist.set_column(tech_col + ws_gpiolist_col, tech_col + ws_gpiolist_col, col_width)
 
+#================ @ get SDR RFFE/GRFC list ====================
+child_sdrrffe = root.find("sdr_gpio_list_v2")
+
+if isinstance(child_sdrrffe, ET.Element):
+    ws_sdrrffe = wb.add_worksheet('SDR RFFE GRFC Signals')
+    ws_sdrrffe.freeze_panes(2, 0)
+    ws_sdrrffe.set_row(0, 25)
+    ws_sdrrffe_row = 0
+    ws_sdrrffe_col = 0
+
+    rffe_signals_et = child_sdrrffe.find('sdr_rffe_signals')
+    if isinstance(rffe_signals_et, ET.Element):
+        rffe_signal_headline = ['Num', 'Speed', 'Comm Master', 'Clock', 'Clock Load', 'Data', 'Data Load']
+        rffe_signal_group_s = [[], [], [], [], [], [], []]
+        rffe_signal_list = rffe_signals_et.findall('sdr_rffe_signal')
+        for rffe_et in rffe_signal_list:
+            rffe_signal_group_s[0].append(rffe_et.attrib['num'])
+            rffe_signal_group_s[1].append(rffe_et.find('speed').text)
+            rffe_signal_group_s[2].append(rffe_et.find('comm_master').text)
+            gpio_list = rffe_et.findall('gpio')
+            rffe_signal_group_s[3].append(gpio_list[0].attrib['name'])
+            rffe_signal_group_s[4].append(gpio_list[0].find('load').text)
+            rffe_signal_group_s[5].append(gpio_list[1].attrib['name'])
+            rffe_signal_group_s[6].append(gpio_list[1].find('load').text)
+        ws_sdrrffe.merge_range(0, ws_sdrrffe_col, 0, ws_sdrrffe_col + 6, 'SDR RFFE Signals', format1)
+        for tech_col in range(0, 7):
+            ws_sdrrffe_row = 1
+            ws_sdrrffe.write(ws_sdrrffe_row, tech_col + ws_sdrrffe_col, rffe_signal_headline[tech_col], format2)
+            ws_sdrrffe_row += 1
+            col_width = calc_col_width_by_str(rffe_signal_headline[tech_col]) + 0.8
+            for rffe_str in rffe_signal_group_s[tech_col]:
+                ws_sdrrffe.write(ws_sdrrffe_row, tech_col + ws_sdrrffe_col, rffe_str, format3)
+                if (calc_col_width_by_str(rffe_str) + 0.8) > col_width:
+                    col_width = (calc_col_width_by_str(rffe_str) + 0.8)
+                ws_sdrrffe_row += 1
+            ws_sdrrffe.set_column(tech_col + ws_sdrrffe_col, tech_col + ws_sdrrffe_col, col_width)
+        ws_sdrrffe_col += 7
+        ws_sdrrffe.set_column(ws_sdrrffe_col, ws_sdrrffe_col, 3)
+        ws_sdrrffe_col += 1
+
+
+    grfc_signals_et = child_sdrrffe.find('sdr_grfc_signals')
+    if isinstance(grfc_signals_et, ET.Element):
+        grfc_signal_headline = ['Num', 'Comm Master', 'Name', 'Load', 'Pull', 'Common Init']
+        grfc_signal_group_s = [[], [], [], [], [], []]
+        grfc_signal_list = grfc_signals_et.findall('sdr_grfc_signal')
+        for grfc_et in grfc_signal_list:
+            grfc_signal_group_s[0].append(grfc_et.attrib['num'])
+            grfc_signal_group_s[1].append(grfc_et.find('comm_master').text)
+            gpio_et = grfc_et.find('gpio')
+            grfc_signal_group_s[2].append(gpio_et.attrib['name'])
+            grfc_signal_group_s[3].append(gpio_et.find('load').text)
+            grfc_signal_group_s[4].append(gpio_et.find('gpio_pull').text)
+            if isinstance(gpio_et.find('gpio_pull'), ET.Element):
+                grfc_signal_group_s[5].append(gpio_et.find('common_init').text)
+            else:
+                grfc_signal_group_s[5].append('')
+        ws_sdrrffe.merge_range(0, ws_sdrrffe_col, 0, ws_sdrrffe_col + 5, 'SDR GRFC Signals', format1)
+        for tech_col in range(0, 6):
+            ws_sdrrffe_row = 1
+            ws_sdrrffe.write(ws_sdrrffe_row, tech_col + ws_sdrrffe_col, grfc_signal_headline[tech_col], format2)
+            ws_sdrrffe_row += 1
+            col_width = calc_col_width_by_str(grfc_signal_headline[tech_col]) + 0.8
+            for rffe_str in grfc_signal_group_s[tech_col]:
+                ws_sdrrffe.write(ws_sdrrffe_row, tech_col + ws_sdrrffe_col, rffe_str, format3)
+                if (calc_col_width_by_str(rffe_str) + 0.8) > col_width:
+                    col_width = (calc_col_width_by_str(rffe_str) + 0.8)
+                ws_sdrrffe_row += 1
+            ws_sdrrffe.set_column(tech_col + ws_sdrrffe_col, tech_col + ws_sdrrffe_col, col_width)
+        ws_sdrrffe_col += 6
+        ws_sdrrffe.set_column(ws_sdrrffe_col, ws_sdrrffe_col, 3)
+        ws_sdrrffe_col += 1
+
+    blanking_signals_et = child_sdrrffe.find('blanking_grfc_signals')
+    if isinstance(blanking_signals_et, ET.Element):
+        blanking_signal_headline = ['Num', 'Comm Master', 'Signal Name', 'Signal Type', 'Enable', 'Disable', 'TX PWR Th(dB10)', 'Band List']
+        blanking_signal_group_s = [[], [], [], [], [], [], [], []]
+        blanking_signal_list = blanking_signals_et.findall('blanking_grfc_signal')
+        for blanking_et in blanking_signal_list:
+            blanking_signal_group_s[0].append(blanking_et.attrib['num'])
+            blanking_signal_group_s[1].append(blanking_et.find('comm_master').text)
+            gpio_et = blanking_et.find('signal')
+            blanking_signal_group_s[2].append(gpio_et.attrib['name'])
+            blanking_signal_group_s[3].append(gpio_et.find('signal_type').text)
+            blanking_signal_group_s[4].append(gpio_et.find('enable').text)
+            blanking_signal_group_s[5].append(gpio_et.find('disable').text)
+            blanking_signal_group_s[6].append(gpio_et.find('tx_pwr_th').text)
+            band_list = gpio_et.find('band_list').findall('band')
+            band_list_s = ''
+            for band_et in band_list:
+                band_list_s += (band_et.text + ' ')
+            blanking_signal_group_s[7].append(band_list_s[0:len(band_list_s)-1])
+        ws_sdrrffe.merge_range(0, ws_sdrrffe_col, 0, ws_sdrrffe_col + 7, 'SDR Blanking GRFC Signals', format1)
+        for tech_col in range(0, 8):
+            ws_sdrrffe_row = 1
+            ws_sdrrffe.write(ws_sdrrffe_row, tech_col + ws_sdrrffe_col, blanking_signal_headline[tech_col], format2)
+            ws_sdrrffe_row += 1
+            col_width = calc_col_width_by_str(blanking_signal_headline[tech_col]) + 0.8
+            for rffe_str in blanking_signal_group_s[tech_col]:
+                ws_sdrrffe.write(ws_sdrrffe_row, tech_col + ws_sdrrffe_col, rffe_str, format3)
+                if (calc_col_width_by_str(rffe_str) + 0.8) > col_width:
+                    col_width = (calc_col_width_by_str(rffe_str) + 0.8)
+                ws_sdrrffe_row += 1
+            ws_sdrrffe.set_column(tech_col + ws_sdrrffe_col, tech_col + ws_sdrrffe_col, col_width)
+        ws_sdrrffe_col += 8
+        ws_sdrrffe.set_column(ws_sdrrffe_col, ws_sdrrffe_col, 3)
+        ws_sdrrffe_col += 1
+
 
 #================ @ Concurrency Restriction ====================
 child_concurrency = root.find("concurrency_restriction_exception_list")
@@ -1404,7 +1512,7 @@ if isinstance(child_concurrency, ET.Element):
 child_signalpathselection = root.find("signal_path_selection_list_v2")
 sigpath_sel_row = 0
 sigpath_sel_col = 0
-
+max_row_number = 0
 if isinstance(child_signalpathselection, ET.Element):
     ws_sigpath_sel = wb.add_worksheet('Signal Path Selection Table')
     ws_sigpath_sel.freeze_panes(2, 0)
@@ -1428,6 +1536,8 @@ if isinstance(child_signalpathselection, ET.Element):
                 sigpath_sel_row += 1
             ws_sigpath_sel.set_column(tech_col + sigpath_sel_col, tech_col + sigpath_sel_col, col_width)
 
+        # ws_sigpath_sel.autofilter(1, sigpath_sel_col, sigpath_sel_row-1, sigpath_sel_col + 9)
+        max_row_number = sigpath_sel_row
         sigpath_sel_col += 10
         ws_sigpath_sel.set_column(sigpath_sel_col, sigpath_sel_col, 3)
         sigpath_sel_col += 1
@@ -1448,7 +1558,9 @@ if isinstance(child_signalpathselection, ET.Element):
                     col_width = calc_col_width_by_str(group_str)
                 sigpath_sel_row += 1
             ws_sigpath_sel.set_column(tech_col + sigpath_sel_col, tech_col + sigpath_sel_col, col_width)
-
+        # ws_sigpath_sel.autofilter(1, sigpath_sel_col, sigpath_sel_row - 1, sigpath_sel_col + 9)
+        if sigpath_sel_row > max_row_number:
+            max_row_number = sigpath_sel_row
         sigpath_sel_col += 10
         ws_sigpath_sel.set_column(sigpath_sel_col, sigpath_sel_col, 3)
         sigpath_sel_col += 1
@@ -1469,10 +1581,14 @@ if isinstance(child_signalpathselection, ET.Element):
                     col_width = calc_col_width_by_str(group_str)
                 sigpath_sel_row += 1
             ws_sigpath_sel.set_column(tech_col + sigpath_sel_col, tech_col + sigpath_sel_col, col_width)
-
+        # ws_sigpath_sel.autofilter(1, sigpath_sel_col, sigpath_sel_row - 1, sigpath_sel_col + 9)
+        if sigpath_sel_row > max_row_number:
+            max_row_number = sigpath_sel_row
         sigpath_sel_col += 10
         ws_sigpath_sel.set_column(sigpath_sel_col, sigpath_sel_col, 3)
         sigpath_sel_col += 1
+    if sigpath_sel_col > 1:
+        ws_sigpath_sel.autofilter(1, 0, max_row_number - 1, sigpath_sel_col -1 )
 
 #================ @ Ant Path Restriction Table ====================
 child_antpath_restriction = root.find("antenna_restriction_exception_list")

@@ -3,6 +3,7 @@ import xlsxwriter as XW
 import types
 import re
 import os
+from colorama import init
 
 
 def calc_col_width_by_str(write_str):
@@ -121,21 +122,38 @@ Python etree handle XML file
 # print the element node info for better understandings
 # -------------------------------------------------------------------------
 def print_tree_element_info(element, namestring):
+    return 0
+    '''
     print('%s type' % namestring, type(element))
     print('%s tag' % namestring, '=========', element.tag, '=========')
     print('%s length:' % namestring, len(element))
+    '''
 # -------------------------------------------------------------------------
 
-while 1:
 
-    rfc_path = input("Input RFC XML: ")
+init(autoreset=True)
+
+class bcolors:
+    HEADER = '\033[1;92m'
+    OKBLUE = '\033[94m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+while 1:
+    print(bcolors.HEADER + '>>>>>>>=====================================' + 'RFCXML-TO-XLSX' + '======================================<<<<<<<' + bcolors.ENDC)
+    print(bcolors.BOLD + "Please enter RFC XML full path or drag the RFC XML here\n>>", end='')
+    rfc_path = input(" ")
 
     # file element tree and get root node
     tree= ET.ElementTree()
     try:
         tree.parse(rfc_path)
-        print(rfc_path)
-        print(os.getcwd())
+        print('Input RFC XML path: ', rfc_path)
+        # print(os.getcwd())
         path_list = re.split(r'\\', rfc_path)
         run_path = ''
         for path_str in path_list[0:len(path_list)-1]:
@@ -143,10 +161,13 @@ while 1:
         xml_filename_str = path_list[-1]
         xlsx_name_create = xml_filename_str[0:len(xml_filename_str)-4] + '.xlsx'
         os.chdir(run_path)
-        print(os.getcwd())
+        print('Output XLSX file:',os.getcwd() + '\\'+ xlsx_name_create)
         break
     except:
-        print('Invalid XML file or path, please enter valid XML file')
+        print(bcolors.FAIL + bcolors.BOLD + 'ERROR: Invalid XML file or path, please enter valid XML file')
+        print(
+            bcolors.HEADER + '>>>>>>>=====================================' + '==============' + '======================================<<<<<<<' + bcolors.ENDC)
+
         '''
         print('Use default RFC path')
         tree.parse(r'C:\CODE\MPSS.HI.1.0.c8-00198\modem_proc\rf\rfc_himalaya\common\etc\rf_card\rfc_Global_SDRV300_BoardID2_ag.xml')
@@ -201,9 +222,11 @@ format6 = wb.add_format({'font_size': 11, 'font_name': 'Calibri', 'bold': 1, 'fo
 root=tree.getroot()
 
 # root RFC
+'''
 print('root type', type(root))
 print('root tag','=========',root.tag,'=========')
 print('root length:', len(root))
+'''
 assert isinstance(root, ET.Element)
 
 #================ @ Card Variants ===================
@@ -345,12 +368,13 @@ for ant_path_et in child_antpath:
         if col_width_n_ant > col_width_ant[col_ant_i]:
             col_width_ant[col_ant_i] = col_width_n_ant
     row_ant += 1
-
+    '''
     print('antpath_id', antpath_id,
           'ant_num', ant_num,
           'tuner', tuner0, tuner1, tuner2, tuner3,
           'XSW', xsw0, xsw1, xsw2,
           'GRFC XSW', grfc_xsw0, grfc_xsw1, grfc_xsw2)
+    '''
 
 for coln in range(len(col_width_ant)):
     ws_antpath.set_column(coln, coln, col_width_ant[coln])
@@ -701,7 +725,7 @@ for sig_path_i in child:
     ws_signalpath.write(row_n, 31, therm_mitigation, format2)
     '''
 
-
+    '''
     print(path_id, path_type, is_PRX, max_tx_bw, pwr_class, functionality, cal_ref, path_override_idx, MCS_256QAM, Disabled, fbrx, SPG, '-', ant_sw_path,
           '--', split_band_sig_path_map,
           '--', split_band_channel_range,
@@ -714,7 +738,7 @@ for sig_path_i in child:
           'PAPM_HUB', PAPM_HUB, 'ASM0',ASM0, 'ASM1',ASM1,'ASM2',ASM2,'ASM3',ASM3,'ASM4',ASM4,
           'grfcASM0',grfc_ASM0, 'grfcASM1',grfc_ASM1,'grfcASM2',grfc_ASM2, 'therm', therm, 'therm_mitigation', therm_mitigation)
     print('---------------------------------')
-
+    '''
 for coln in range(len(col_width_s)):
     ws_signalpath.set_column(coln, coln, col_width_s[coln])
 ws_signalpath.autofilter(0, 0, row_n, len(col_width_s))
@@ -833,8 +857,10 @@ for fbrx_path_i in child_fbrx_path:
             col_width_fbrx[col_fbrx_i] = col_width_n_fbrx
     row_fbrx += 1
 
+    '''
     print('fbrx_pathid', fbrx_pathid, 'fbrx_trx',fbrx_trx, 'fbrx_asm', fbrx_asm, fbrx_asm1, 'grfc_asm', grfc_asm, grfc_asm1,
           'coupler', coupler0, coupler1, coupler2, coupler3, coupler4)
+    '''
 
 for coln in range(len(col_width_fbrx)):
     ws_fbrx.set_column(coln, coln, col_width_fbrx[coln])
@@ -975,11 +1001,11 @@ for device_et in child_physical_device:
         device_str_list_alt.append(rffe_alt.find('product_rev').text)
 
         Alt_rffe_device_list.append(device_str_list_alt)
-        print(device_str_list_alt)
+        # print(device_str_list_alt)
 
     index += 1
 
-    print(device_str_list)
+    # print(device_str_list)
 
 ws_phydevice.write(0, 0, 'RFFE DEVICES', format6)
 ws_phydevice.set_row(0, 25)
@@ -1827,3 +1853,6 @@ if isinstance(child_cardpro, ET.Element):
 
 
 wb.close() # save to xlsx file
+print(bcolors.OKGREEN + bcolors.BOLD + bcolors.UNDERLINE + 'Generate XLSX file successfully in the same XML folder')
+print(bcolors.HEADER + '>>>>>>>=====================================' + '==============' + '======================================<<<<<<<' + bcolors.ENDC)
+os.system("pause")

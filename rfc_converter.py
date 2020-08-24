@@ -524,7 +524,7 @@ for sig_path_i in child:
                 if isinstance(sub_band, ET.Element):
                     sub_band_s = sub_band.text
                 cal_ant_sw_cnf = band_i.findall('cal_info_per_ant_switching_config')
-                cal_flag = {'NO_CAL': 'NC', 'FULL_CAL': 'FC'}
+                cal_flag = {'NO_CAL': 'NC', 'FULL_CAL': 'FC', 'OFFSET_CAL': 'OC'}
                 cal_ant_sw_cnf_s = '['
                 for ant_i in range(len(cal_ant_sw_cnf)):
                     cal_ant_sw_cnf_s += cal_flag[cal_ant_sw_cnf[ant_i].text]
